@@ -1,6 +1,8 @@
+import scala.io.Source
+
 object Day3 extends App {
 
-  val text = "^v^v^v^v^v"
+  val text = Source.fromFile("inputs/input_day03.txt").getLines.mkString
 
   println(visited(text).size)
   println(

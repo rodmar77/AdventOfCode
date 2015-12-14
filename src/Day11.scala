@@ -1,7 +1,10 @@
+import scala.io.Source
+
 object Day11 extends App {
 
-  println(next("hxbxwxba"))
-  println(next(next("hxbxwxba")))
+  val password = Source.fromFile("inputs/input_day11.txt").getLines.mkString
+  println(next(password))
+  println(next(next(password)))
 
   def next(s: String) = {
     def matches(s: String) = {

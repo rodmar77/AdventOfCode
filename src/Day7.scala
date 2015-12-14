@@ -43,7 +43,7 @@ object Day7 extends App {
     Operation("^(.+?) RSHIFT (\\d+?) -> (.+)$", TwoOpAction(_ >> _)),
     Operation("^NOT (.+?) -> (.+)$", OneOpAction(~_)))
 
-  val lines = Source.fromFile("/tmp/input.txt").getLines.toList
+  val lines = Source.fromFile("inputs/input_day07.txt").getLines.toList
   println(getValues("a"))
 
   def getValues = {

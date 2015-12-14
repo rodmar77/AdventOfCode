@@ -1,6 +1,10 @@
+import scala.io.Source
+
 object Day10 extends App {
 
-  println(lookAndSay("1321131112", 60).length)
+  val first = Source.fromFile("inputs/input_day10.txt").getLines.mkString
+  println(lookAndSay(first, 40).length)
+  println(lookAndSay(first, 50).length)
 
   def lookAndSay(start: String, count: Int) = {
     val regex = """(\d)(\1*)""".r

@@ -1,11 +1,15 @@
 import java.security._
 
+import scala.io.Source
+
 object Day4 extends App {
+
+  val suffix = Source.fromFile("inputs/input_day04.txt").getLines.mkString
 
   println(minWithPrefix("00000"))
   println(minWithPrefix("000000"))
   
-  def minWithPrefix(p: String) = Range(1, Int.MaxValue).indexWhere(i => hash("ckczppom" + i).startsWith(p))
+  def minWithPrefix(p: String) = Range(1, Int.MaxValue).indexWhere(i => hash(suffix + i).startsWith(p))
 
   def hash(s: String) = {
     val md = MessageDigest.getInstance("MD5")
