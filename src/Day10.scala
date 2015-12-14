@@ -5,7 +5,7 @@ object Day10 extends App {
   def lookAndSay(start: String, count: Int) = {
     val regex = """(\d)(\1*)""".r
     def lookAndSay(idx: Int, acc: String): String = {
-      if (idx == count) (acc)
+      if (idx == count) acc
       else lookAndSay(
         idx + 1,
         regex

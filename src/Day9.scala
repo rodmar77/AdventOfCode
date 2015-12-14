@@ -21,24 +21,24 @@ object Day9 extends App {
             .toList
             .map {
               case ((from, to), dist) => route(
-                av.filter { case ((nextFrom, nextTo), _) => ((nextFrom != from) && (nextTo != from) && (nextTo != to)) },
+                av.filter { case ((nextFrom, nextTo), _) => (nextFrom != from) && (nextTo != from) && (nextTo != to) },
                 curr :+ from :+ to,
-                av.keys.flatMap { case (from, to) => List[String](from, to) }.toList.distinct.size,
+                av.keys.flatMap { case (nextFrom, nextTo) => List[String](nextFrom, nextTo) }.toList.distinct.size,
                 dist)
             }
             .filter(_.isDefined)
             .map(_.get)))
             
-      else if (curr.length == needed) (Option[Int](total))
-      else if (av.isEmpty) (None)
+      else if (curr.length == needed) Option[Int](total)
+      else if (av.isEmpty) None
       else Option[Int](
         f(
           av
             .toList
-            .filter { case ((from, to), _) => (from == curr.last) }
+            .filter { case ((from, to), _) => from == curr.last }
             .map {
               case ((from, to), dist) => route(
-                av.filter { case ((nextFrom, nextTo), _) => ((nextFrom != from) && (nextTo != from) && (nextTo != to)) },
+                av.filter { case ((nextFrom, nextTo), _) => (nextFrom != from) && (nextTo != from) && (nextTo != to) },
                 curr :+ to,
                 needed,
                 total + dist)
