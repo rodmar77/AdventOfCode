@@ -8,8 +8,8 @@ object Day11 extends App {
 
   def next(s: String) = {
     def matches(s: String) = {
-      def matchesFirst = s.sliding(3).map(t => (t(2) - t(1) == 1) && (t(1) - t(0) == 1)).count(_ == true) >= 1
-      def matchesSecond = s.count(c => (c == 'l') || (c == 'i') || (c == 'o')) == 0
+      def matchesFirst = s.sliding(3).map(t => t.map(_ - t.head).mkString == "012").reduce(_ || _)
+      def matchesSecond = "lio".forall(s.indexOf(_) < 0)
       def matchesThird = """.*(.)\1.*(.)\2.*""".r.findFirstIn(s).isDefined
 
       matchesFirst && matchesSecond && matchesThird
