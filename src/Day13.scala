@@ -38,10 +38,8 @@ object Day13 extends App {
   }
 
   def getArrangements(s: Seq[String]): Seq[(String, String)] = s
-    .indices
-    .init
-    .flatMap(i => Seq[(String, String)](
-      (s(i), s(i + 1)),
-      (s(i + 1), s(i)))) :+(s.last, s.head) :+(s.head, s.last)
+    .sliding(2)
+    .flatMap { case (Seq(a, b)) => Seq((a, b), (b, a))}
+    .toList :+(s.last, s.head) :+(s.head, s.last)
 
 }

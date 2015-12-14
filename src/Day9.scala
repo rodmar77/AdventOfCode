@@ -7,7 +7,7 @@ object Day9 extends App {
     .getLines
     .map(_.split(" "))
     .map(arr => (arr(0), arr(2)) -> arr(4).toInt)
-    .flatMap(p => List[((String, String), Int)](p, (p._1.swap, p._2)))
+    .flatMap(p => Seq(p, (p._1.swap, p._2)))
     .toMap
 
   println(route(links, _.min))
@@ -23,7 +23,7 @@ object Day9 extends App {
               case ((from, to), dist) => route(
                 av.filter { case ((nextFrom, nextTo), _) => (nextFrom != from) && (nextTo != from) && (nextTo != to) },
                 curr :+ from :+ to,
-                av.keys.flatMap { case (nextFrom, nextTo) => List[String](nextFrom, nextTo) }.toList.distinct.size,
+                av.keys.flatMap { case (nextFrom, nextTo) => Seq(nextFrom, nextTo) }.toList.distinct.size,
                 dist)
             }
             .filter(_.isDefined)
