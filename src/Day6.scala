@@ -19,7 +19,7 @@ object Day6 extends App {
   println(lightsToggle(data))
 
   def lightsOn(ls: List[(String, (Int, Int), (Int, Int))]) = {
-    val array = Array.tabulate(1000, 1000)((i, j) => false)
+    val array = Array.fill(1000, 1000)(false)
     ls.foreach {
       case (command, (x0, y0), (x1, y1)) =>
         command match {
@@ -33,7 +33,7 @@ object Day6 extends App {
   }
 
   def lightsToggle(ls: List[(String, (Int, Int), (Int, Int))]) = {
-    val array = Array.tabulate(1000, 1000)((i, j) => 0)
+    val array = Array.fill(1000, 1000)(0)
     ls.foreach {
       case (command, (x0, y0), (x1, y1)) =>
         command match {

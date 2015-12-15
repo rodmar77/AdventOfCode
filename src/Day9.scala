@@ -10,43 +10,11 @@ object Day9 extends App {
     .flatMap(p => Seq(p, (p._1.swap, p._2)))
     .toMap
 
-  println(route(links, _.min))
-  println(route(links, _.max))
+  println(route(links).min)
+  println(route(links).max)
 
-  def route(vs: Map[(String, String), Int], f: List[Int] => Int): Int = {
-    def route(av: Map[(String, String), Int], curr: List[String], needed: Int, total: Int): Option[Int] = {
-      if (curr.isEmpty) Option[Int](
-        f(
-          av
-            .toList
-            .map {
-              case ((from, to), dist) => route(
-                av.filter { case ((nextFrom, nextTo), _) => (nextFrom != from) && (nextTo != from) && (nextTo != to) },
-                curr :+ from :+ to,
-                av.keys.flatMap { case (nextFrom, nextTo) => Seq(nextFrom, nextTo) }.toList.distinct.size,
-                dist)
-            }
-            .filter(_.isDefined)
-            .map(_.get)))
-            
-      else if (curr.length == needed) Option[Int](total)
-      else if (av.isEmpty) None
-      else Option[Int](
-        f(
-          av
-            .toList
-            .filter { case ((from, to), _) => from == curr.last }
-            .map {
-              case ((from, to), dist) => route(
-                av.filter { case ((nextFrom, nextTo), _) => (nextFrom != from) && (nextTo != from) && (nextTo != to) },
-                curr :+ to,
-                needed,
-                total + dist)
-            }
-            .filter(_.isDefined)
-            .map(_.get)))
-    }
-
-    route(vs, List[String](), 0, 0).get
+  def route(vs: Map[(String, String), Int]) = {
+    val names = vs.keys.map(_._1).toList.distinct
+    names.permutations.map(_.sliding(2).map(l => vs((l.head, l.last))).sum)
   }
 }

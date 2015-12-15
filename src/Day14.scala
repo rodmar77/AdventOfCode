@@ -1,5 +1,4 @@
-import java.lang.Math.min
-import java.lang.Math.max
+import Math.{min, max}
 import scala.io.Source
 
 object Day14 extends App {
@@ -10,8 +9,9 @@ object Day14 extends App {
     .fromFile("inputs/input_day14.txt")
     .getLines
     .toList
-    .map(regex.findFirstMatchIn(_).get)
-    .map(m => (m.group(1), m.group(2).toInt, m.group(3).toInt, m.group(4).toInt))
+    .map {
+      case regex(name, speed, fly, rest) => (name, speed.toInt, fly.toInt, rest.toInt)
+    }
 
   println(data.map(position(_, 2503)).max)
   println(points(data.map(positions(_, 2503))).max)

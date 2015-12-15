@@ -5,13 +5,13 @@ object Day3 extends App {
   val text = Source.fromFile("inputs/input_day03.txt").getLines.mkString
 
   println(visited(text).size)
+  val (even, odd) = text.indices.partition(_ % 2 == 0)
   println(
-    (visited(filterBy(_ % 2 == 0)) ++
-      visited(filterBy(_ % 2 == 1)))
+    (visited(even) ++ visited(odd))
       .distinct
       .size)
 
-  def filterBy(f: Int => Boolean) = text.zipWithIndex.filter(p => f(p._2)).map(_._1).mkString
+  def visited(s: Seq[Int]): Seq[(Int, Int)] = visited(s.map(text(_)).mkString)
   def visited(s: String) = s
     .scanLeft((0, 0))((a, b) => b match {
       case '^' => (a._1, a._2 + 1)
