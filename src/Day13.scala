@@ -1,8 +1,7 @@
 import scala.io.Source
-
 object Day13 extends App {
 
-  var regex = """([^ ]+) would (gain|lose) (\d+) happiness units by sitting next to ([^.]+).""".r
+  val regex = """([^ ]+) would (gain|lose) (\d+) happiness units by sitting next to ([^.]+).""".r
 
   val data = Source
     .fromFile("inputs/input_day13.txt")
@@ -10,8 +9,9 @@ object Day13 extends App {
     .toList
 
   val happiness = data
-    .map(regex.findFirstMatchIn(_).get)
-    .map(t => (t.group(1), t.group(4)) -> valueOf(t.group(2), t.group(3).toInt))
+    .map {
+      case regex(first, status, amount, second) => (first, second) -> valueOf(status, amount.toInt)
+    }
     .toMap
     .withDefaultValue(0)
 
