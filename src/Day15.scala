@@ -44,6 +44,6 @@ object Day15 extends App {
        else (1 to number - sum - (groups - curr.size)).map(n => partitionInto(sum + n, curr :+ BigInt(n), acc)).reduce(_ ++ _)
     }
 
-    partitionInto(0, List(), Set())
+    partitionInto(0, Nil, Set())
   }
 }
