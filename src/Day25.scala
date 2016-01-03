@@ -15,12 +15,9 @@ object Day25 extends App {
       else colValue(curr + 1, acc + line + curr)
     }
 
-    def total(curr: Int, target: Int, acc: BigInt): BigInt = {
-      if (curr == target) acc
-      else total(curr + 1, target, (acc * 252533) % 33554393)
-    }
-
-    total(1, colValue(1, lineStart(line)), 20151125)
+    val m = colValue(1, lineStart(line)) - 1
+    val k = BigInt(252533).modPow(m, 33554393)
+    (20151125 * k) % 33554393
   }
 
   val data = Source
