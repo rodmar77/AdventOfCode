@@ -1,9 +1,9 @@
 import scala.io._
 
-object Day9 extends App {
+object Day09 extends App {
 
   val links = Source
-    .fromFile("inputs/input_day09.txt")
+    .fromFile("inputs/2015/input_day09.txt")
     .getLines
     .map(_.split(" "))
     .map(arr => (arr(0), arr(2)) -> arr(4).toInt)

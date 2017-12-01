@@ -10,7 +10,7 @@ object Day19 extends App {
   val regex = "(.+?) => (.+?)".r
 
   val data = Source
-    .fromFile("inputs/input_day19.txt")
+    .fromFile("inputs/2015/input_day19.txt")
     .getLines
     .toList
 

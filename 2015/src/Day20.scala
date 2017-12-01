@@ -1,11 +1,11 @@
-import Math.sqrt
+import java.lang.Math.sqrt
 
 import scala.io.Source
 
 object Day20 extends App {
 
   val data = Source
-    .fromFile("inputs/input_day20.txt")
+    .fromFile("inputs/2015/input_day20.txt")
     .getLines
     .mkString
     .toInt

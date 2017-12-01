@@ -3,7 +3,7 @@ import scala.io.Source
 object Day18 extends App {
 
   val data = Source
-    .fromFile("inputs/input_day18.txt")
+    .fromFile("inputs/2015/input_day18.txt")
     .getLines
     .map(_.toCharArray.toList)
     .toList

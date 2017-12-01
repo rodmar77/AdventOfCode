@@ -2,9 +2,9 @@ import java.security._
 
 import scala.io.Source
 
-object Day4 extends App {
+object Day04 extends App {
 
-  val suffix = Source.fromFile("inputs/input_day04.txt").getLines.mkString
+  val suffix = Source.fromFile("inputs/2015/input_day04.txt").getLines.mkString
 
   println(minWithPrefix("00000"))
   println(minWithPrefix("000000"))

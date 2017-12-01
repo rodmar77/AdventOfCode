@@ -1,8 +1,8 @@
 import scala.io._
 
-object Day8 extends App {
+object Day08 extends App {
 
-  val lines = Source.fromFile("inputs/input_day08.txt").getLines.toList
+  val lines = Source.fromFile("inputs/2015/input_day08.txt").getLines.toList
 
   println(
     lines.map(_.length).sum -

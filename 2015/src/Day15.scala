@@ -5,7 +5,7 @@ object Day15 extends App {
   val regex = """.+?: capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)""".r
 
   val data = Source
-    .fromFile("inputs/input_day15.txt")
+    .fromFile("inputs/2015/input_day15.txt")
     .getLines
     .map {
       case regex(capacity, durability, flavor, texture, calories) =>

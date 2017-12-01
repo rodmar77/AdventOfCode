@@ -2,7 +2,7 @@ import scala.io.Source
 
 object Day10 extends App {
 
-  val first = Source.fromFile("inputs/input_day10.txt").getLines.mkString
+  val first = Source.fromFile("inputs/2015/input_day10.txt").getLines.mkString
   println(lookAndSay(first, 40).length)
   println(lookAndSay(first, 50).length)
 

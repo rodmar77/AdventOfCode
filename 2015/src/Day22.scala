@@ -1,55 +1,55 @@
 import scala.io.Source
 
-case class Player(hp: Int, mana: Int, armor: Int) {
-  def heal(amount: Int) = Player(hp + amount, mana, armor)
-  def hit(amt: Int) = Player(hp - (amt - armor), mana, armor)
-}
-
-case class Boss(hp: Int, damage: Int) {
-  def hit(amt: Int) = Boss(hp - amt, damage)
-}
-
-abstract class Spell(val name: String, val cost: Int)(implicit val rounds: Int = 0) {
-  def execute(p: Player, b: Boss): (Player, Boss, List[Spell])
-  def damage(hit: Int, b: Boss) = Boss(b.hp - hit, b.damage)
-}
-
-object MagicMissile extends Spell("MagicMissile", 53) {
-  def execute(p: Player, b: Boss) = (p, b.hit(4), Nil)
-}
-
-object Drain extends Spell("Drain", 73) {
-  def execute(p: Player, b: Boss) = (p.heal(2), b.hit(2), Nil)
-}
-
-case class Shield(r: Int = 7) extends Spell("Shield", 113)(r) {
-  def execute(p: Player, b: Boss) = this.rounds match {
-    case 7 => (p, b, List(Shield(6)))
-    case 0 => (Player(p.hp, p.mana, 0), b, List(Shield(0)))
-    case _ => (Player(p.hp, p.mana, 7), b, List(Shield(rounds - 1)))
-  }
-}
-
-case class Poison(r: Int = 7) extends Spell("Poison", 173)(r) {
-  def execute(p: Player, b: Boss) = this.rounds match {
-    case 7 => (p, b, List(Poison(6)))
-    case _ => (p, b.hit(3), List(Poison(rounds - 1)))
-  }
-}
-
-case class Recharge(r: Int = 6) extends Spell("Recharge", 229)(r) {
-  def execute(p: Player, b: Boss) = this.rounds match {
-    case 6 => (p, b, List(Recharge(5)))
-    case _ => (Player(p.hp, p.mana + 101, p.armor), b, List(Recharge(rounds - 1)))
-  }
-}
-
 object Day22 extends App {
+
+  case class Player(hp: Int, mana: Int, armor: Int) {
+    def heal(amount: Int) = Player(hp + amount, mana, armor)
+    def hit(amt: Int) = Player(hp - (amt - armor), mana, armor)
+  }
+
+  case class Boss(hp: Int, damage: Int) {
+    def hit(amt: Int) = Boss(hp - amt, damage)
+  }
+
+  abstract class Spell(val name: String, val cost: Int)(implicit val rounds: Int = 0) {
+    def execute(p: Player, b: Boss): (Player, Boss, List[Spell])
+    def damage(hit: Int, b: Boss) = Boss(b.hp - hit, b.damage)
+  }
+
+  object MagicMissile extends Spell("MagicMissile", 53) {
+    def execute(p: Player, b: Boss) = (p, b.hit(4), Nil)
+  }
+
+  object Drain extends Spell("Drain", 73) {
+    def execute(p: Player, b: Boss) = (p.heal(2), b.hit(2), Nil)
+  }
+
+  case class Shield(r: Int = 7) extends Spell("Shield", 113)(r) {
+    def execute(p: Player, b: Boss) = this.rounds match {
+      case 7 => (p, b, List(Shield(6)))
+      case 0 => (Player(p.hp, p.mana, 0), b, List(Shield(0)))
+      case _ => (Player(p.hp, p.mana, 7), b, List(Shield(rounds - 1)))
+    }
+  }
+
+  case class Poison(r: Int = 7) extends Spell("Poison", 173)(r) {
+    def execute(p: Player, b: Boss) = this.rounds match {
+      case 7 => (p, b, List(Poison(6)))
+      case _ => (p, b.hit(3), List(Poison(rounds - 1)))
+    }
+  }
+
+  case class Recharge(r: Int = 6) extends Spell("Recharge", 229)(r) {
+    def execute(p: Player, b: Boss) = this.rounds match {
+      case 6 => (p, b, List(Recharge(5)))
+      case _ => (Player(p.hp, p.mana + 101, p.armor), b, List(Recharge(rounds - 1)))
+    }
+  }
 
   val regex = """(.+?): (\d+)""".r
 
   val data = Source
-    .fromFile("inputs/input_day22.txt")
+    .fromFile("inputs/2015/input_day22.txt")
     .getLines
     .map {
       case regex(name, value) => name -> value.toInt

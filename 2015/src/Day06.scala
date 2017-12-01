@@ -1,12 +1,13 @@
 import java.lang.Math.max
+
 import scala.io.Source
 
-object Day6 extends App {
+object Day06 extends App {
 
   val regex = """(.+?) (\d+),(\d+) through (\d+),(\d+)""".r
 
   val data = Source
-    .fromFile("inputs/input_day06.txt")
+    .fromFile("inputs/2015/input_day06.txt")
     .getLines
     .toList
     .map(regex.findFirstMatchIn(_).get)

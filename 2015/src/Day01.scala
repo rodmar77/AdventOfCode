@@ -1,8 +1,8 @@
 import scala.io.Source
 
-object Day1 extends App {
+object Day01 extends App {
 
-  val text = Source.fromFile("inputs/input_day01.txt").getLines.mkString
+  val text = Source.fromFile("inputs/2015/input_day01.txt").getLines.mkString
   val values = Map('(' -> 1, ')' -> -1)
 
   println(text.map(values).sum)

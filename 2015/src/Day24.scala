@@ -3,7 +3,7 @@ import scala.io.Source
 object Day24 extends App {
 
   val data = Source
-    .fromFile("inputs/input_day24.txt")
+    .fromFile("inputs/2015/input_day24.txt")
     .getLines
     .map(BigInt(_))
     .toList

@@ -1,4 +1,5 @@
-import Math.max
+import java.lang.Math.max
+
 import scala.io.Source
 
 object Day21 extends App {
@@ -6,7 +7,7 @@ object Day21 extends App {
   val regex = """(.+?): (\d+)""".r
 
   val data = Source
-    .fromFile("inputs/input_day21.txt")
+    .fromFile("inputs/2015/input_day21.txt")
     .getLines
     .map {
       case regex(name, value) => name -> value.toInt

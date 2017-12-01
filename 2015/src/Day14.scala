@@ -1,4 +1,5 @@
-import Math.{min, max}
+import java.lang.Math.{max, min}
+
 import scala.io.Source
 
 object Day14 extends App {
@@ -6,7 +7,7 @@ object Day14 extends App {
   val regex = """(.+?) can fly (\d+) km/s for (\d+) seconds, but then must rest for (\d+) seconds.""".r
 
   val data = Source
-    .fromFile("inputs/input_day14.txt")
+    .fromFile("inputs/2015/input_day14.txt")
     .getLines
     .toList
     .map {

@@ -5,7 +5,7 @@ import scala.util.matching.Regex.Match
 object Day23 extends App {
 
   val data = Source
-    .fromFile("inputs/input_day23.txt")
+    .fromFile("inputs/2015/input_day23.txt")
     .getLines
     .toList
 

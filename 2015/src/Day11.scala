@@ -2,7 +2,7 @@ import scala.io.Source
 
 object Day11 extends App {
 
-  val password = Source.fromFile("inputs/input_day11.txt").getLines.mkString
+  val password = Source.fromFile("inputs/2015/input_day11.txt").getLines.mkString
   println(next(password))
   println(next(next(password)))
 

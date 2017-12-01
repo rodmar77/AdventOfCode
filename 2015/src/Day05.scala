@@ -1,6 +1,6 @@
 import scala.io.Source
 
-object Day5 extends App {
+object Day05 extends App {
 
   def isNice(s: String) = {
     def isDef(regex: String) = regex.r.findFirstIn(s).isDefined
@@ -21,7 +21,7 @@ object Day5 extends App {
     twoDoubleLetter && repeatWithBetween
   }
 
-  val lines = Source.fromFile("inputs/input_day05.txt").getLines.toList
+  val lines = Source.fromFile("inputs/2015/input_day05.txt").getLines.toList
   println(lines.count(isNice))
   println(lines.count(isNicer))
 

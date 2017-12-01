@@ -1,8 +1,8 @@
 import scala.io.Source
 
-object Day3 extends App {
+object Day03 extends App {
 
-  val text = Source.fromFile("inputs/input_day03.txt").getLines.mkString
+  val text = Source.fromFile("inputs/2015/input_day03.txt").getLines.mkString
 
   println(visited(text).size)
   val (even, odd) = text.indices.partition(_ % 2 == 0)

@@ -5,7 +5,7 @@ object Day16 extends App {
   val regex = """Sue (\d+): (.+?): (\d+), (.+?): (\d+), (.+?): (\d+)""".r
 
   val data = Source
-    .fromFile("inputs/input_day16.txt")
+    .fromFile("inputs/2015/input_day16.txt")
     .getLines
     .toList
     .map {

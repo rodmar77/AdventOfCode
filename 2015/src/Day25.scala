@@ -21,7 +21,7 @@ object Day25 extends App {
   }
 
   val data = Source
-    .fromFile("inputs/input_day25.txt")
+    .fromFile("inputs/2015/input_day25.txt")
     .getLines
     .map {
       case pattern(line, col) => (line.toInt, col.toInt)

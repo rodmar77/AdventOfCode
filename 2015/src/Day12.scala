@@ -3,7 +3,7 @@ import scala.io.Source
 object Day12 extends App {
 
   val text = Source
-    .fromFile("inputs/input_day12.txt")
+    .fromFile("inputs/2015/input_day12.txt")
     .getLines
     .mkString
 
