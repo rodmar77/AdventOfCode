@@ -10,9 +10,9 @@ object Day02 {
       else                       move(x, y+1)
     }
 
-    def canMove(ix: Int, iy: Int) = map.isDefinedAt(iy) && map(iy).isDefinedAt(ix) && (map(iy)(ix) != ' ')
-    def move(ix: Int, iy: Int) = if (canMove(ix, iy)) Position(ix, iy, map) else this
-    def getValue = map(y)(x)
+    private def canMove(ix: Int, iy: Int) = map.isDefinedAt(iy) && map(iy).isDefinedAt(ix) && (map(iy)(ix) != ' ')
+    private def move(ix: Int, iy: Int) = if (canMove(ix, iy)) Position(ix, iy, map) else this
+    def getValue: Char = map(y)(x)
   }
 
   def main(args: Array[String]): Unit = {
@@ -37,7 +37,7 @@ object Day02 {
         "  D  ")))
   }
 
-  def getCode(codes: List[String], x: Int, y: Int, map: List[String]) = {
+  def getCode(codes: List[String], x: Int, y: Int, map: List[String]): String = {
     def nextPosition(s: String, p: Position) = s.foldLeft(p)((a, b) => a.move(b))
     def getCode(remCodes: List[String], code: String, p: Position): String = {
       if (remCodes.isEmpty) code
