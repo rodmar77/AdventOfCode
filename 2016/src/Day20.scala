@@ -1,10 +1,10 @@
 import scala.io.Source
 
-object Day10 {
+object Day20 {
 
   def main(args: Array[String]): Unit = {
     val lines = Source
-      .fromFile("inputs/2016/input_day10.txt")
+      .fromFile("inputs/2016/input_day20.txt")
       .getLines
       .toList
       .map(_.split("-"))
