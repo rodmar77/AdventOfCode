@@ -13,19 +13,18 @@ object Day09 {
   }
 
   def getScore(line: String): Int = {
-    def getScore(ll: String, inGarbage: Boolean, openGroups: Int, acc: Int, idx: Int): Int = {
+    def getScore(ll: String, inGarbage: Boolean, openGroups: Int, acc: Int): Int = {
       if (ll.isEmpty) acc
-      else if (ll.head == '!') getScore(ll.drop(2), inGarbage, openGroups, acc, idx + 1)
-      else if (ll.head == '>') getScore(ll.tail, false, openGroups, acc, idx + 1)
-      else if (ll.head == '<') getScore(ll.tail, true, openGroups, acc, idx + 1)
-      else if (inGarbage)      getScore(ll.tail, inGarbage, openGroups, acc, idx + 1)
-      else if (ll.head == '}') getScore(ll.tail, inGarbage, openGroups - 1, acc + openGroups, idx + 1)
-      else if (ll.head == '{') getScore(ll.tail, inGarbage, openGroups + 1, acc, idx + 1)
-      else if (ll.head == ',') getScore(ll.tail, inGarbage, openGroups, acc, idx + 1)
-      else throw new IllegalStateException(s"Don't know what to do: at $idx, ll.head == '${ll.head}', inGarbage == $inGarbage, openGroups == $openGroups, acc == $acc")
+      else if (ll.head == '!') getScore(ll.drop(2), inGarbage, openGroups, acc)
+      else if (ll.head == '>') getScore(ll.tail, false, openGroups, acc)
+      else if (inGarbage)      getScore(ll.tail, inGarbage, openGroups, acc)
+      else if (ll.head == '<') getScore(ll.tail, true, openGroups, acc)
+      else if (ll.head == '}') getScore(ll.tail, inGarbage, openGroups - 1, acc + openGroups)
+      else if (ll.head == '{') getScore(ll.tail, inGarbage, openGroups + 1, acc)
+      else getScore(ll.tail, inGarbage, openGroups, acc)
     }
 
-    getScore(line, false, 0, 0, 0)
+    getScore(line, false, 0, 0)
   }
 
   def getGarbageCount(line: String): Int = {

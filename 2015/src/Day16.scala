@@ -24,7 +24,7 @@ object Day16 extends App {
     .filter {
       case (_, map) => expected.keys.forall(k => (map(k) == expected(k)) || (map(k) == 0))
     }.filter {
-      case (_, map) => map.values.forall(_ > 0)
+      case (_, map) => map.values.exists(_ > 0)
     }.map(_._1)
     .head)
 

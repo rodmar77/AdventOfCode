@@ -8,30 +8,35 @@ object Day18 extends App {
     .map(_.toCharArray.toList)
     .toList
 
-  println(life(100))
-  println(life(100, (0, 0), (0, data.size-1), (data.size-1, 0), (data.size-1, data.size-1)))
+  println(life(data, 100))
+  println(life(data, 100, (0, 0), (0, data.size-1), (data.size-1, 0), (data.size-1, data.size-1)))
 
-  def life(times: Int, stuck: (Int, Int)*) = {
-    def getNeighborCount(i: Int, j: Int, acc: List[List[Char]]) = {
-      (-1 to 1).map(x => (-1 to 1).map(y =>
-        if (((x == 0) && (y == 0)) ||
-          (!acc.isDefinedAt(i + x)) ||
-          (!acc(i + x).isDefinedAt(j + y)) ||
-          (acc(i + x)(j + y) == '.')) 0
-        else 1)
-        .sum)
-        .sum
-    }
+  def life(data: Seq[Seq[Char]], times: Int, stuck: (Int, Int)*) = {
+    def life(curr: Int, acc: Seq[Seq[Char]]): Seq[Seq[Char]] = {
+      def isLive(x: Int, y: Int) = stuck.contains((x, y)) || (acc.isDefinedAt(y) && acc(y).isDefinedAt(x) && acc(y)(x) == '#')
 
-    def life(curr: Int, acc: List[List[Char]]): List[List[Char]] = {
+      def getNeighborCount(i: Int, j: Int) = {
+        val areaTotal = (-1 to 1).map(y => (-1 to 1).count(x => isLive(x + i, y + j))).sum
+        if (isLive(i, j)) areaTotal - 1 else areaTotal
+      }
+
+      def getValueForLiveCell(x: Int, y: Int): Char = {
+        def staysLive(nc: Int) = stuck.contains((x, y)) || nc == 2 || nc == 3
+        if (staysLive(getNeighborCount(x, y))) '#' else '.'
+      }
+
+      def getValueForDeadCell(x: Int, y: Int): Char = {
+        def staysDead(nc: Int) = nc != 3
+        if (staysDead(getNeighborCount(x, y))) '.' else '#'
+      }
+
       if (curr == times) acc
-      else life(curr + 1, List.tabulate(acc.size, acc.head.size)((i, j) => {
-        val n = getNeighborCount(i, j, acc)
-        if (stuck.contains((i, j))) '#'
-        else if (((acc(i)(j) == '#') && ((n == 2) || (n == 3))) ||
-          ((acc(i)(j) == '.') && (n == 3))) '#'
-        else '.'
-      }))
+      else life(
+        curr + 1,
+        acc.indices.map(y => acc(y).indices.map(x => {
+          if (isLive(x, y)) getValueForLiveCell(x, y)
+          else getValueForDeadCell(x, y)
+        })))
     }
 
     life(0, data).map(_.count(_ == '#')).sum

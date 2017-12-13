@@ -1,22 +1,34 @@
+import java.math.BigInteger
 import java.security._
 
 import scala.io.Source
 
 object Day04 extends App {
 
-  val suffix = Source.fromFile("inputs/2015/input_day04.txt").getLines.mkString
+  val prefix = Source.fromFile("inputs/2015/input_day04.txt").getLines.mkString
 
-  println(minWithPrefix("00000"))
-  println(minWithPrefix("000000"))
+  println(minWithPrefixes(prefix, "00000"))
+  println(minWithPrefixes(prefix, "000000"))
   
-  def minWithPrefix(p: String) = Range(1, Int.MaxValue).indexWhere(i => hash(suffix + i).startsWith(p))
+  def minWithPrefixes(sp: String, hp: String) = {
+    def minWithPrefix(acc: Int): Int = {
+      if (md5Hash(sp + acc).startsWith(hp)) acc
+      else minWithPrefix(acc + 1)
+    }
 
-  def hash(s: String) = {
-    val md = MessageDigest.getInstance("MD5")
-    md.digest(s.getBytes).map(b => {
-      if ((0xff & b) < 0x10) "0" + (0xFF & b).toHexString
-      else (0xFF & b).toHexString
-    }).mkString
+    def md5Hash(text: String) = {
+      val m = MessageDigest.getInstance("MD5")
+      val b = text.getBytes("UTF-8")
+      m.update(b, 0, b.length)
+      new BigInteger(1, m.digest())
+        .toString(16)
+        .reverse
+        .padTo(32, "0")
+        .reverse
+        .mkString
+    }
+
+    minWithPrefix(0)
   }
 
 }
