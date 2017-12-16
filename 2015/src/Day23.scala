@@ -9,40 +9,54 @@ object Day23 extends App {
     .getLines
     .toList
 
-  def registers(im: Map[String, Int]) = {
-    val instructions = List[(Regex, (Map[String, Int], Int, Seq[String]) => (Map[String, Int], Int))](
-      ( """hlf (.+)""".r, (m, c, p) => (m + (p.head -> m(p.head) / 2), c + 1)),
-      ( """tpl (.+)""".r, (m, c, p) => (m + (p.head -> m(p.head) * 3), c + 1)),
-      ( """inc (.+)""".r, (m, c, p) => (m + (p.head -> (m(p.head) + 1)), c + 1)),
-      ( """jmp (.+)""".r, (m, c, p) => (m, c + p.head.toInt)),
-      ( """jie (.+?), (.+)""".r, (m, c, p) => (m, c + (if (m(p.head) % 2 == 0) p.last.toInt else 1))),
-      ( """jio (.+?), (.+)""".r, (m, c, p) => (m, c + (if (m(p.head) == 1) p.last.toInt else 1))))
+  def registers(data: List[String], im: Map[String, BigInt]) = {
+    val (rhlf, rtpl, rinc, rjmp, rjie, rjio) = (
+      "hlf (\\w+)".r,
+      "tpl (\\w+)".r,
+      "inc (\\w+)".r,
+      "jmp ([+-]\\d+)".r,
+      "jie (\\w+), ([+-]\\d+)".r,
+      "jio (\\w+), ([+-]\\d+)".r)
 
-    def nextInstruction(idx: Int) = instructions.find(p => p._1.findFirstMatchIn(data(idx)).nonEmpty).get
-    def toList(groups: Match) = (1 to groups.groupCount).map(groups.group)
+    type RegisterMap = Map[String, BigInt]
+    val operations: List[(Regex, (String, Int, RegisterMap) => (Int, RegisterMap))] = List(
+      (rhlf, (op, index, m) => op match {
+        case rhlf(r) => (index + 1, m + (r -> m(r) / 2))
+      }),
+      (rtpl, (op, index, m) => op match {
+        case rtpl(r) => (index + 1, m + (r -> m(r) * 3))
+      }),
+      (rinc, (op, index, m) => op match {
+        case rinc(r) => (index + 1, m + (r -> (m(r) + 1)))
+      }),
+      (rjmp, (op, index, m) => op match {
+        case rjmp(offset) => (index + offset.toInt, m)
+      }),
+      (rjie, (op, index, m) => op match {
+        case rjie(r, offset) => if (m(r) % 2 == 0) (index + offset.toInt, m) else (index + 1, m)
+      }),
+      (rjio, (op, index, m) => op match {
+        case rjio(r, offset) => if (m(r) == 1) (index + offset.toInt, m) else (index + 1, m)
+      }))
 
-    def nextParams(idx: Int) = {
-      val instruction = nextInstruction(idx)
-      val groups = instruction._1.findFirstMatchIn(data(idx)).get
-      (instruction._2, toList(groups))
-    }
-
-    def nextData(vals: Map[String, Int], idx: Int) = {
-      val (instruction, params) = nextParams(idx)
-      instruction(vals, idx, params)
-    }
-
-    def getMap(vals: Map[String, Int], idx: Int): Map[String, Int] = {
-      if (idx == data.size) vals
+    def execute(index: Int, m: RegisterMap): RegisterMap = {
+      if (index >= data.length) m
       else {
-        val (nextMap, nextIdx) = nextData(vals, idx)
-        getMap(nextMap, nextIdx)
+        val op = data(index)
+        val k = operations
+          .find(_._1
+            .findFirstMatchIn(op)
+            .isDefined)
+          .get
+          ._2(op, index, m)
+
+        execute(k._1, k._2)
       }
     }
 
-    getMap(im, 0)
+    execute(0, im)
   }
 
-  println(registers(Map("a" -> 0, "b" -> 0))("b"))
-  println(registers(Map("a" -> 1, "b" -> 0))("b"))
+  println(registers(data, Map("a" -> 0, "b" -> 0))("b"))
+  println(registers(data, Map("a" -> 1, "b" -> 0))("b"))
 }

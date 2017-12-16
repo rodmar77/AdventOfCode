@@ -42,9 +42,12 @@ object Day07 extends App {
     Operation("^NOT (.+?) -> (.+)$", OneOpWire(~_)))
 
   val lines = Source.fromFile("inputs/2015/input_day07.txt").getLines.toList
-  println(getValues("a"))
 
-  def getValues = {
+  val a = getValues(lines)("a")
+  println(a)
+  println(getValues(lines.map(s => if (s.endsWith(" -> b")) s"$a -> b" else s))("a"))
+
+  def getValues(lines: List[String]) = {
     def getValues(ls: Seq[String], v: Map[String, Int]): (Seq[String], Map[String, Int]) = {
       if (ls.isEmpty) (ls, v)
       else {
