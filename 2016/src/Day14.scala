@@ -17,7 +17,7 @@ object Day14 {
   abstract class Crypto(val saltPrefix: String) {
     private val first = ".*?(.)\\1\\1.*".r
 
-    def isValidPad(start: Int, c: String) =
+    private def isValidPad(start: Int, c: String) =
       (start until start + 1000).exists(index => memoizedHash(s"$saltPrefix$index").contains(c * 5))
 
     def getKey(keyIndex: Int) = {
@@ -35,17 +35,17 @@ object Day14 {
       getKey(0, 0)
     }
 
-    def md5Hash(text: String) = MessageDigest
+    protected def md5Hash(text: String) = MessageDigest
       .getInstance("MD5")
       .digest(text.getBytes("ASCII"))
       .map("%02x".format(_))
       .mkString
 
-    def memoizedHash: String => String
+    protected def memoizedHash: String => String
   }
 
   case class PadCrypto(sp: String) extends Crypto(sp) {
-    lazy val memoizedHash: String => String = memoize { md5Hash }
+    protected lazy val memoizedHash = memoize { md5Hash }
   }
 
   case class StretchedPadCrypto(sp: String) extends Crypto(sp) {
@@ -58,6 +58,6 @@ object Day14 {
       stretchHash(text, 0)
     }
 
-    lazy val memoizedHash: String => String = memoize { stretchHash }
+    protected lazy val memoizedHash = memoize { stretchHash }
   }
 }

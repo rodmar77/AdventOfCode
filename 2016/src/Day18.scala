@@ -22,11 +22,8 @@ object Day18 {
         def trap(i: Int) = ch(i) == '^'
 
         str.indices.map(idx => {
-          val (left, center, right) = (trap(idx - 1), trap(idx), trap(idx + 1))
-          if ((left && center && !right) // Its left and center tiles are traps, but its right tile is not.
-            || (center && right && !left) // Its center and right tiles are traps, but its left tile is not.
-            || (left && !center && !right) // Only its left tile is a trap.
-            || (!left && !center && right)) // Only its right tile is a trap.
+          val (l, r) = (trap(idx - 1), trap(idx + 1))
+          if ((l && !r) || (!l && r))
             '^'
           else
             '.'
