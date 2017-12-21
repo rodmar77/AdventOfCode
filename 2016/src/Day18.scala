@@ -9,31 +9,36 @@ object Day18 {
       .toList
       .head
 
-    println(getSafeTileCount(start, 40)._2)
-    println(getSafeTileCount(start, 400000)._2)
+    println(getSafeTileCount(start, 40))
+    println(getSafeTileCount(start, 400000))
   }
 
-  def getSafeTileCount(start: String, count: Int): (String, Int) = {
+  def getSafeTileCount(start: String, count: Int): Int = {
     def safeTileCount(row: String) = row.count(_ == '.')
 
-    def nextValueFor(rowData: (String, Int)): (String, Int) = {
-      def getNextRow(str: String): String = {
-        def ch(i: Int) = if (str.isDefinedAt(i)) str(i) else '.'
-        def trap(i: Int) = ch(i) == '^'
+    def _getSafeTileCount(idx: Int, rowData: (String, Int)): Int = {
+      def nextValueFor(rowData: (String, Int)): (String, Int) = {
+        def getNextRow(str: String): String = {
+          def ch(i: Int) = if (str.isDefinedAt(i)) str(i) else '.'
+          def trap(i: Int) = ch(i) == '^'
 
-        str.indices.map(idx => {
-          val (l, r) = (trap(idx - 1), trap(idx + 1))
-          if ((l && !r) || (!l && r))
-            '^'
-          else
-            '.'
-        }).mkString
+          str.indices.map(idx => {
+            val (l, r) = (trap(idx - 1), trap(idx + 1))
+            if ((l && !r) || (!l && r))
+              '^'
+            else
+              '.'
+          }).mkString
+        }
+
+        val nextRow = getNextRow(rowData._1)
+        (nextRow, safeTileCount(nextRow) + rowData._2)
       }
 
-      val nextRow = getNextRow(rowData._1)
-      (nextRow, safeTileCount(nextRow) + rowData._2)
+      if (idx == count) rowData._2
+      else _getSafeTileCount(idx + 1, nextValueFor(rowData))
     }
 
-    (0 until count - 1).foldLeft((start, safeTileCount(start)))((a, _) => nextValueFor(a))
+    _getSafeTileCount(1, (start, safeTileCount(start)))
   }
 }
