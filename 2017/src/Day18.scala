@@ -12,6 +12,16 @@ object Day18 {
     println(executeWithTwoPrograms(commands).sent.size)
   }
 
+  val (snd, set, add, mul, mod, rcv, jgz) = (
+    "snd (.+)".r,
+    "set (.+) (.+)".r,
+    "add (.+) (.+)".r,
+    "mul (.+) (.+)".r,
+    "mod (.+) (.+)".r,
+    "rcv (.+)".r,
+    "jgz (.+) (.+)".r,
+  )
+
   case class Program(
                 idx: Int = 0,
                 regs: Map[String, BigInt] = Map().withDefaultValue(0),
@@ -20,14 +30,15 @@ object Day18 {
                 isRunning: Boolean = true) {
 
     private def isNumeric(str: String) = str.matches("([+-]?[0-9]+)")
-    
+    private def regOp(x: String, y: String, f: (BigInt, BigInt) => BigInt) = regs + (x -> f(regs(x), valueOf(y)))
+
     def valueOf(x: String) = if (isNumeric(x)) BigInt(x) else regs(x)
     def send(x: String) = Program(idx, regs, q, sent :+ valueOf(x), isRunning)
     def addToQueue(y: BigInt) = Program(idx, regs, q :+ y, sent, isRunning)
     def set(x: String, y: String) = Program(idx, regs + (x -> valueOf(y)), q, sent, isRunning)
-    def add(x: String, y: String) = Program(idx, regs + (x -> (regs(x) + valueOf(y))), q, sent, isRunning)
-    def mul(x: String, y: String) = Program(idx, regs + (x -> (regs(x) * valueOf(y))), q, sent, isRunning)
-    def mod(x: String, y: String) = Program(idx, regs + (x -> (regs(x) % valueOf(y))), q, sent, isRunning)
+    def add(x: String, y: String) = Program(idx, regOp(x, y, _ + _), q, sent, isRunning)
+    def mul(x: String, y: String) = Program(idx, regOp(x, y, _ * _), q, sent, isRunning)
+    def mod(x: String, y: String) = Program(idx, regOp(x, y, _ % _), q, sent, isRunning)
     def jump(cnt: Int) = Program(idx + cnt, regs, q, sent, isRunning)
     def jgz(x: String, y: String) = if (valueOf(x) > 0) jump(valueOf(y).toInt) else jump(1)
     def canConsume = q.nonEmpty
@@ -36,16 +47,6 @@ object Day18 {
   }
 
   def execute(commands: List[String]) = {
-    val (snd, set, add, mul, mod, rcv, jgz) = (
-      "snd (.+)".r,
-      "set (.+) (.+)".r,
-      "add (.+) (.+)".r,
-      "mul (.+) (.+)".r,
-      "mod (.+) (.+)".r,
-      "rcv (.+)".r,
-      "jgz (.+) (.+)".r,
-    )
-
     def execute(p: Program): BigInt = {
       if (p.idx >= commands.size) -1
       else commands(p.idx) match {
@@ -66,16 +67,6 @@ object Day18 {
   }
 
   def executeWithTwoPrograms(commands: List[String]) = {
-    val (snd, set, add, mul, mod, rcv, jgz) = (
-      "snd (.+)".r,
-      "set (.+) (.+)".r,
-      "add (.+) (.+)".r,
-      "mul (.+) (.+)".r,
-      "mod (.+) (.+)".r,
-      "rcv (.+)".r,
-      "jgz (.+) (.+)".r,
-    )
-
     def executeFirstProgram(a: Program, b: Program) = commands(a.idx) match {
       case snd(x) => (a.send(x).jump(1), b.addToQueue(a.valueOf(x)))
       case set(x, y) => (a.set(x, y).jump(1), b)

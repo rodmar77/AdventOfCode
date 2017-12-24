@@ -17,7 +17,7 @@ object Day08 extends App {
       lines.map(_.length).sum)
 
   def escape(raw: String): String = {
-    import scala.reflect.runtime.universe._
-    Literal(Constant(raw)).toString
+    def escapeChar(c: Char) = if (c == '"' || c == '\\') s"\\$c" else s"$c"
+    '"' + raw.map(escapeChar).mkString + '"'
   }
 }
