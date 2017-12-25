@@ -8,29 +8,17 @@ object Day10 {
       .getLines
       .mkString
 
-    val (spaces, spacesFromBytes) = (
-      data
+    val spaces = data
         .split(",")
         .map(_.toInt)
-        .toList,
-
-      data
-        .getBytes("ASCII")
         .toList
-        .map(_.toInt)
-        ++ List(17, 31, 73, 47, 23))
 
     println(
       applyRotations(spaces)
         .take(2)
         .product)
 
-    println(
-      applyRotations(spacesFromBytes, 64)
-        .sliding(16, 16)
-        .map(_.reduce(_ ^ _))
-        .map("%02x".format(_))
-        .mkString)
+    println(knotHash(data.mkString))
   }
 
   implicit class x[A](as: List[A]) {
@@ -41,6 +29,20 @@ object Day10 {
     }
 
     def copy = as.indices.map(as(_))
+  }
+
+  def knotHash(text: String) = {
+    val bytes = text
+      .getBytes("ASCII")
+      .toList
+      .map(_.toInt) ++
+      List(17, 31, 73, 47, 23)
+
+    applyRotations(bytes, 64)
+      .sliding(16, 16)
+      .map(_.reduce(_ ^ _))
+      .map("%02x".format(_))
+      .mkString
   }
 
   def applyRotations(groups: List[Int], rounds: Int = 1) = {
