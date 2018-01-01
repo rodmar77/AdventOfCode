@@ -39,17 +39,14 @@ object Day14 {
     }
 
     def removeRegionRow(row: Int, col: Int): Boolean = {
-      val stack = mutable.Stack[(Int, Int)]((row, col))
-      while (stack.nonEmpty) {
-        stack.pop() match {
-          case (y, x) => if (regions(y)(x) == '1') {
-            stack.pushAll(neighbours(y, x))
-            regions(y) = regions(y).updated(x, '0')
-          }
+      if (regions(row)(col) == '1') {
+        regions(row) = regions(row).updated(col, '0')
+        neighbours(row, col).foreach {
+          case (y, x) => removeRegionRow(y, x)
         }
-      }
 
-      true
+        true
+      } else false
     }
 
     def removeRegion: Boolean = {
