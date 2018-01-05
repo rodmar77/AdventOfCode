@@ -57,14 +57,18 @@ object Day13 {
 
   def main(args: Array[String]): Unit = {
     // What is the fewest number of steps required for you to reach 31,39?
-    println(shortestPath(1362, (1, 1), (31, 39)))
+    shortestPath(1362, (1, 1), (31, 39)) match {
+      case (length, _) => println(length)
+    }
 
     // How many locations (distinct x,y coordinates, including your starting
     // location) can you reach in at most 50 steps?
-    
+    shortestPath(1362, (1, 1), (-1, -1), 50) match {
+      case (_, visited) => println(visited.size)
+    }
   }
 
-  def shortestPath(favoriteNumber: Int, src: Point, dest: Point) = {
+  def shortestPath(favoriteNumber: Int, src: Point, dest: Point, maxDist: Int = Int.MaxValue) = {
     def bitCount(n: Int): Int = {
       def bitCount(n: Int, acc: Int): Int = {
         if (n == 0) acc
@@ -86,15 +90,15 @@ object Day13 {
         }
     }
 
-    def shortestPath(visited: Set[Point], curr: Point, dist: Int): Int = {
-      if (curr == dest) dist
+    def shortestPath(visited: Set[Point], curr: Point, dist: Int): (Int, Set[Point]) = {
+      if (curr == dest || dist == maxDist) (dist, visited)
       else validNeighbours(curr)
               .filterNot(visited.contains)
               .map(np => shortestPath(visited + np, np, dist + 1))
-              .reduceOption(_ min _)
-              .getOrElse(Int.MaxValue)
+              .reduceOption((a, b) => (a._1.min(b._1), a._2 ++ b._2))
+              .getOrElse((Int.MaxValue, visited))
     }
 
-    shortestPath(Set(), (1, 1), 0)
+    shortestPath(Set(src), src, 0)
   }
 }
