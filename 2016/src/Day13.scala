@@ -95,7 +95,9 @@ object Day13 {
       else validNeighbours(curr)
               .filterNot(visited.contains)
               .map(np => shortestPath(visited + np, np, dist + 1))
-              .reduceOption((a, b) => (a._1.min(b._1), a._2 ++ b._2))
+              .reduceOption[(Int, Set[(Int, Int)])] {
+                case ((a, as), (b, bs)) => (a.min(b), as ++ bs)
+              }
               .getOrElse((Int.MaxValue, visited))
     }
 
