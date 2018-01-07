@@ -8,8 +8,8 @@ object Day12 {
       .getLines
       .map(_.split(" <-> "))
       .map(arr =>
-        arr(0).toInt ->
-        arr(1).split(", ").map(_.toInt))
+        arr.head.toInt ->
+        arr.last.split(", ").map(_.toInt))
       .toMap
 
     val joined = join(data)

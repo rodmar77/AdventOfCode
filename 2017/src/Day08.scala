@@ -28,9 +28,7 @@ object Day08 {
       if (doApply(reg_2, cmp, cmpValue.toInt)) m + (reg_1 -> newValue(reg_1, op, amount))
       else m
     }
-
   }
-
 
   def main(args: Array[String]): Unit = {
     val operations = Source
