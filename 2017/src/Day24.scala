@@ -65,7 +65,7 @@ object Day24 {
 
   def main(args: Array[String]): Unit = {
     val components = Source
-      .fromFile("inputs/2016/input_day24.txt")
+      .fromFile("inputs/2017/input_day24.txt")
       .getLines
       .map(_.split("/").map(_.toInt))
       .map(arr => (arr.head, arr.last))
