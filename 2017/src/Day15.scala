@@ -141,7 +141,8 @@ object Day15 {
     values from the example above, after five million pairs, the judge would
     eventually find a total of 309 pairs that match in their lowest 16 bits.)
 
-    After 5 million pairs, but using this new generator logic, what is the judge's final count?
+    After 5 million pairs, but using this new generator logic, what is the
+    judge's final count?
      */
     println(count(
       s.head,
@@ -172,8 +173,7 @@ object Day15 {
       def matchBits() = {
         def compareBits(a: Long, b: Long, r: Int): Boolean = {
           if (r == 16) true
-          else if ((a & 1) == (b & 1)) compareBits(a >> 1, b >> 1, r + 1)
-          else false
+          else ((a & 1) == (b & 1)) && compareBits(a >> 1, b >> 1, r + 1)
         }
 
         compareBits(currA, currB, 0)
