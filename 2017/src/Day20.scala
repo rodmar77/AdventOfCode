@@ -80,7 +80,7 @@ object Day20 {
     val regex = ("p=<(-?\\d+),(-?\\d+),(-?\\d+)>, " +
       "v=<(-?\\d+),(-?\\d+),(-?\\d+)>, " +
       "a=<(-?\\d+),(-?\\d+),(-?\\d+)>").r
-    
+
     val particles = Source
       .fromFile("inputs/2017/input_day20.txt")
       .getLines

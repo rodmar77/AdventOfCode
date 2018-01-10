@@ -25,7 +25,7 @@ import scala.io.Source
    |      A  |  C     |
    |  F---|--|-E---+  |
    |      |  |  |  D  |
-   |   +B-+  +--+     |
+   |      +B-+  +--+  |
    +------------------+
 
   Given this diagram, the packet needs to take the following path:
@@ -65,7 +65,7 @@ object Day19 {
         |      A  |  C     |
         |  F---|--|-E---+  |
         |      |  |  |  D  |
-        |   +B-+  +--+     |
+        |      +B-+  +--+  |
         +------------------+
 
         ...the packet would go:
