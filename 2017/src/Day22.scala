@@ -291,27 +291,22 @@ object Day22 {
       override def reverse: PositionMovement = Forward(x, y)
     }
 
-    case class VirusSimple(nodes: Array[Array[Boolean]], affected: Int, pos: PositionMovement) extends Virus {
+    case class VirusSimple(nodes: Map[(Int, Int), Boolean], affected: Int, pos: PositionMovement) extends Virus {
 
       override def getAffected() = affected
       override def burst() = {
-        val (x, y) = pos.currentNode
-        val nextMovement = if (nodes(y)(x)) pos.turnRight else pos.turnLeft
+        val currentlyInfected = nodes.getOrElse(pos.currentNode, false)
+        val nextMovement = if (currentlyInfected) pos.turnRight else pos.turnLeft
         VirusSimple(
-          invertNode(x, y),
-          if (nodes(y)(x)) affected + 1 else affected,
+          nodes + (pos.currentNode -> !currentlyInfected),
+          if (currentlyInfected) affected else affected + 1,
           nextMovement.moveForward
         )
-      }
-
-      def invertNode(x: Int, y: Int) = {
-        nodes(y)(x) = !nodes(y)(x)
-        nodes
       }
     }
 
     case class VirusEvolved(
-                      nodes: Array[Array[Int]],
+                      nodes: Map[(Int, Int), Int],
                       affected: Int,
                       pos: PositionMovement) extends Virus {
 
@@ -319,20 +314,17 @@ object Day22 {
       override def getAffected() = affected
 
       override def burst() = {
-        val (x, y) = pos.currentNode
-        val (nextPos, nextAffected, nextNodes) = nodes(y)(x) match {
-          case 0 => (pos.turnRight, affected, update(x, y, 2)) // Infected nodes become flagged.
-          case 1 => (pos, affected + 1, update(x, y, 0))       // Weakened nodes become infected.
-          case 2 => (pos.reverse, affected, update(x, y, 3))   // Flagged nodes become clean.
-          case _ => (pos.turnLeft, affected, update(x, y, 1))  // Clean nodes become weakened.
+        val (nextPos, nextAffected, nextNodes) = nodes.get(pos.currentNode) match {
+          case Some(number) => number match {
+            case 0 => (pos.turnRight, affected, nodes + (pos.currentNode -> 2)) // Infected nodes become flagged.
+            case 1 => (pos, affected + 1, nodes + (pos.currentNode -> 0))       // Weakened nodes become infected.
+            case 2 => (pos.reverse, affected, nodes + (pos.currentNode -> 3))   // Flagged nodes become clean.
+            case _ => (pos.turnLeft, affected, nodes + (pos.currentNode -> 1))  // Clean nodes become weakened.
+          }
+          case None => (pos.turnLeft, affected, nodes + (pos.currentNode -> 1)) // Clean nodes become weakened.
         }
 
         VirusEvolved(nextNodes, nextAffected, nextPos.moveForward)
-      }
-
-      def update(x: Int, y: Int, v: Int) = {
-        nodes(y)(x) = v
-        nodes
       }
     }
 
@@ -341,19 +333,26 @@ object Day22 {
       else burst(v.burst(), acc + 1)
     }
 
-    if (evolved) {
-      val arr = Array.tabulate(450, 450) {
-        case (y, x) => if (infected.contains((x - 200, y - 200))) 0 else 3
+    def createInitialEvolvedMap() = {
+      def createInitialMap(infected: List[(Int, Int)], acc: Map[(Int, Int), Int]): Map[(Int, Int), Int] = {
+        if (infected.isEmpty) acc
+        else createInitialMap(infected.tail, acc + (infected.head -> 0))
       }
 
-      burst(VirusEvolved(arr, 0, Forward(212, 212)), 0)
-    } else {
-      val arr = Array.tabulate(200, 200) {
-        case (y, x) => infected.contains((x - 50, y - 50))
-      }
-
-      burst(VirusSimple(arr, 0, Forward(62, 62)), 0)
+      createInitialMap(infected, Map())
     }
+
+    def createInitialSimpleMap() = {
+      def createInitialMap(infected: List[(Int, Int)], acc: Map[(Int, Int), Boolean]): Map[(Int, Int), Boolean] = {
+        if (infected.isEmpty) acc
+        else createInitialMap(infected.tail, acc + (infected.head -> true))
+      }
+
+      createInitialMap(infected, Map())
+    }
+
+    if (evolved) burst(VirusEvolved(createInitialEvolvedMap(), 0, Forward(12, 12)), 0)
+    else burst(VirusSimple(createInitialSimpleMap(), 0, Forward(12, 12)), 0)
   }
 
 }

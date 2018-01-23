@@ -90,9 +90,6 @@ import scala.io.Source
   once it does, count the number of times 1 appears on the tape. In the above
   example, the diagnostic checksum is 3.
 
-  Recreate the Turing machine and save the computer! What is the diagnostic checksum
-  it produces once it's working again?
-
  */
 object Day25 {
 
@@ -104,12 +101,15 @@ object Day25 {
       .toList)
 
     val states = toStates(groups.tail)
-    val tape = runMachine(states, groups.head, Array.tabulate(8000)(_ => 0), 6000)
-    println(tape.count(_ == 1))
+
+    // Recreate the Turing machine and save the computer! What is the diagnostic
+    // checksum it produces once it's working again?
+    val tape = runMachine(states, groups.head)
+    println(tape.values.sum)
   }
 
-  def runMachine(states: List[State], data: List[String], tape: Array[Int], cursor: Int) = {
-    def runMachine(state: State, tape: Array[Int], cursor: Int, count: Long, total: Long): Array[Int] = {
+  def runMachine(states: List[State], data: List[String]) = {
+    def runMachine(state: State, tape: Map[Int, Int], cursor: Int, count: Long, total: Long): Map[Int, Int] = {
       if (count == total) tape
       else state.execute(states, tape, cursor) match {
         case (nextTape, nextCursor, nextState) => runMachine(nextState, nextTape, nextCursor, count + 1, total)
@@ -123,32 +123,27 @@ object Day25 {
 
     val (startState(name), iterations(count)) = (data.head, data.last)
     states.find(s => s.name.equals(name)) match {
-      case Some(state) => runMachine(state, tape, cursor, 0, count.toLong)
+      case Some(state) => runMachine(state, Map().withDefaultValue(0), 0, 0, count.toLong)
     }
   }
 
   abstract class Step {
-    def execute(states: List[State], state: State, tape: Array[Int], cursor: Int): (Array[Int], Int, State)
+    def execute(states: List[State], state: State, tape: Map[Int, Int], cursor: Int): (Map[Int, Int], Int, State)
   }
 
   case class Write(v: Int) extends Step {
-    def updateTapeAt(tape: Array[Int], idx: Int) = {
-      tape(idx) = v
-      tape
-    }
-
-    override def execute(states: List[State], state: State, tape: Array[Int], cursor: Int) = (updateTapeAt(tape, cursor), cursor, state)
+    override def execute(states: List[State], state: State, tape: Map[Int, Int], cursor: Int) = (tape + (cursor -> v), cursor, state)
   }
 
   case class Move(direction: String) extends Step {
-    override def execute(states: List[State], state: State, tape: Array[Int], cursor: Int) = direction match {
+    override def execute(states: List[State], state: State, tape: Map[Int, Int], cursor: Int) = direction match {
       case "left" => (tape, cursor - 1, state)
       case _ => (tape, cursor + 1, state)
     }
   }
 
   case class Next(sn: String) extends Step {
-    override def execute(states: List[State], state: State, tape: Array[Int], cursor: Int) = {
+    override def execute(states: List[State], state: State, tape: Map[Int, Int], cursor: Int) = {
       states.find(st => sn.equals(st.name)) match {
         case Some(nextState) => (tape, cursor, nextState)
       }
@@ -156,8 +151,8 @@ object Day25 {
   }
 
   case class State(name: String, steps: Map[Int, List[Step]]) {
-    def execute(states: List[State], tape: Array[Int], cursor: Int): (Array[Int], Int, State) = {
-      def execute(steps: List[Step], tape: Array[Int], cursor: Int, state: State): (Array[Int], Int, State) = {
+    def execute(states: List[State], tape: Map[Int, Int], cursor: Int): (Map[Int, Int], Int, State) = {
+      def execute(steps: List[Step], tape: Map[Int, Int], cursor: Int, state: State): (Map[Int, Int], Int, State) = {
         if (steps.isEmpty) (tape, cursor, state)
         else steps.head.execute(states, state, tape, cursor) match {
           case (nextTape, nextCursor, nextState) => execute(steps.tail, nextTape, nextCursor, nextState)
