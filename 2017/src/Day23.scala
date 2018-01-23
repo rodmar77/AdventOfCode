@@ -38,7 +38,7 @@ object Day23 {
 
     // If you run the program (your puzzle input), how many times is the mul
     // instruction invoked?
-    println(execute(commands))
+    println(execute(commands).counts("mul"))
 
     /*
     Now, it's time to fix the problem.

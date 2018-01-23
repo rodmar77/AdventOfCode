@@ -85,6 +85,8 @@ object Day17 {
      */
     println((1 to 50000000).foldLeft((0, List[Int]())) {
       case ((pos, result), n) => ((pos + 1 + key) % n, if ((pos + key + 1) % n == 0) result :+ n else result )
+    } match {
+      case (_, ll) => ll.last
     })
   }
 
