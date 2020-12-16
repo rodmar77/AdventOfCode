@@ -26,10 +26,11 @@ object Day07 {
         case (mainName, children) => {
           val mainNode = acc.getOrElseUpdate(mainName, Node(mainName, new mutable.ArrayDeque[(Int, Node)]))
           children.foreach {
-            case (_, childName) => {
-              val childNode = acc.getOrElseUpdate(childName, Node(childName, new mutable.ArrayDeque[(Int, Node)]))
-              childNode.addLink(0, mainNode)
-            }
+            case (_, childName) => acc
+              .getOrElseUpdate(
+                  childName,
+                  Node(childName, new mutable.ArrayDeque[(Int, Node)]))
+              .addLink(0, mainNode)
           }
         }
       }
