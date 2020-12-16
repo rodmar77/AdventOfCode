@@ -93,13 +93,13 @@ object Day10 {
           case "bot" => solve(
             remaining.tail,
             all.filterNot(_.equals(remaining.head)),
-            addRobot(robots, srcBot.max, h).filterKeys(_ != srcBot.id),
+            addRobot(robots, srcBot.max, h).view.filterKeys(_ != srcBot.id).toMap,
             output)
 
           case _ => solve(
             remaining.tail,
             all.filterNot(_.equals(remaining.head)),
-            robots.filterKeys(_ != srcBot.id),
+            robots.view.filterKeys(_ != srcBot.id).toMap,
             output + (h -> srcBot.max))
         }
 

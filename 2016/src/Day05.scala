@@ -1,5 +1,4 @@
 import java.security.MessageDigest
-
 import scala.io.Source
 
 /*
