@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
 
@@ -62,9 +63,6 @@ import scala.util.Using
 
   According to the above rules, your improved system would report 2 valid
   passports.
-
-  Count the number of valid passports - those that have all required fields.
-  Treat cid as optional. In your batch file, how many passports are valid?
  */
 
 object Day04 {
@@ -75,6 +73,11 @@ object Day04 {
         .getLines
         .toList)
 
+      /*
+        Count the number of valid passports - those that have all required
+        fields. Treat cid as optional. In your batch file, how many passports
+        are valid?
+       */
         val neededKeys = Set("byr", "iyr", "eyr", "hgt", "hcl" ,"ecl", "pid")
         val validPassports = passports.filter(p => neededKeys.subsetOf(p.keySet))
 
@@ -168,6 +171,7 @@ object Day04 {
       "([a-z]{3}):([^ ]+)".r.findAllMatchIn(passport).map(rm => (rm.group(1), rm.group(2))).toMap
     }
 
+    @tailrec
     def getPassports(lines: List[String], passport: String, acc: List[String]): List[String] = {
       if (lines.isEmpty) acc :+ passport
       else if (lines.head.isEmpty) getPassports(lines.tail, "", acc :+ passport)

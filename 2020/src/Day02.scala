@@ -34,8 +34,6 @@ import scala.util.Using
   not; it contains no instances of b, but needs at least 1. The first and third
   passwords are valid: they contain one a or nine c, both within the limits of
   their respective policies.
-
-  How many passwords are valid according to their policies?
  */
 
 object Day02 {
@@ -49,12 +47,15 @@ object Day02 {
         })
         .toList
 
+      /*
+        How many passwords are valid according to their policies?
+      */
         println(rules
           .count {
             case (low, high, c, pwd) => between(pwd.count(_ == c), low, high)
           });
 
-        /*
+      /*
         --- Part Two ---
 
         While it appears you validated the passwords correctly, they don't seem
@@ -81,7 +82,7 @@ object Day02 {
 
         How many passwords are valid according to the new interpretation of the
         policies?
-         */
+      */
 
         println(rules
           .count {

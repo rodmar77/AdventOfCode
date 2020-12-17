@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
 
@@ -18,6 +19,7 @@ object Day15 {
       else m + (key -> List(index))
     }
 
+    @tailrec
     def _getNumber(m: Map[Int, List[Int]], last: Int, ci: Int): Int = {
       if (ci == idx) last
       else if (m(last).length == 1) _getNumber(m + (0 -> List(m(0).last, ci)), 0, ci + 1)

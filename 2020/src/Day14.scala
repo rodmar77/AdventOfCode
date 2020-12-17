@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
 
@@ -17,6 +18,7 @@ object Day14 {
 
   def process(ll: List[String]): Map[Int, Long] = {
     def applyMask(mask: String, number: Long): Long = {
+      @tailrec
       def applyMask(cm: String, cv: String, n: Long): Long = {
         if (cm.isEmpty) java.lang.Long.parseLong(cv, 2)
         else cm.last match {
@@ -28,6 +30,7 @@ object Day14 {
       applyMask(mask, "", number)
     }
 
+    @tailrec
     def process(l: List[String], mask: String, acc: Map[Int, Long]): Map[Int, Long] = {
       if (l.isEmpty) acc
       else l.head match {
@@ -53,6 +56,7 @@ object Day14 {
       applyFloatingMask(mask, "", address)
     }
 
+    @tailrec
     def processFloatingMask(l: List[String], mask: String, acc: List[Map[Long, Long]]): List[Map[Long, Long]] = {
       if (l.isEmpty) acc
       else l.head match {

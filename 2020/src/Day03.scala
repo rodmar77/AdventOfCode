@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
 
@@ -69,9 +70,6 @@ import scala.util.Using
 
   In this example, traversing the map using this slope would cause you to
   encounter 7 trees.
-
-  Starting at the top-left corner of your map and following a slope of right 3
-  and down 1, how many trees would you encounter?
  */
 
 object Day03 {
@@ -82,8 +80,13 @@ object Day03 {
         .getLines
         .toList
 
+      /*
+        Starting at the top-left corner of your map and following a slope of
+        right 3 and down 1, how many trees would you encounter?
+      */
          println(countTrees(grid, 3, 1))
-        /*
+
+      /*
         --- Part Two ---
 
         Time to check the rest of the slopes - you need to minimize the
@@ -115,6 +118,7 @@ object Day03 {
   }
 
   def countTrees(grid: List[String], right: Int, down: Int): Long = {
+    @tailrec
     def countTrees(remaining: List[String], r: Int, acc: Int): Long = {
       if (remaining.isEmpty) acc
       else countTrees(remaining.drop(down), (r + right) % remaining.head.length, acc + (if (remaining.head(r) == '#') 1 else 0))

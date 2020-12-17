@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
 
@@ -58,8 +59,6 @@ import scala.util.Using
       FFFBBBFRRR: row 14, column 7, seat ID 119.
       BBFFBBFRLL: row 102, column 4, seat ID 820.
 
-    As a sanity check, look through your list of boarding passes. What is the highest seat ID on a boarding pass?
-
  */
 
 object Day05 {
@@ -72,23 +71,26 @@ object Day05 {
         .toList
         .sorted
 
+      /*
+        As a sanity check, look through your list of boarding passes. What is
+        the highest seat ID on a boarding pass?
+       */
         println(boardingPasses.max)
 
-        /*
-          --- Part Two ---
+      /*
+        --- Part Two ---
 
-          Ding! The "fasten seat belt" signs have turned on. Time to find your
-          seat.
+        Ding! The "fasten seat belt" signs have turned on. Time to find your
+        seat.
 
-          It's a completely full flight, so your seat should be the only missing
-          boarding pass in your list. However, there's a catch: some of the seats
-          at the very front and back of the plane don't exist on this aircraft,
-          so they'll be missing from your list as well.
+        It's a completely full flight, so your seat should be the only missing
+        boarding pass in your list. However, there's a catch: some of the seats
+        at the very front and back of the plane don't exist on this aircraft,
+        so they'll be missing from your list as well.
 
-          Your seat wasn't at the very front or back, though; the seats with IDs +1
-          and -1 from yours will be in your list.
-        */
-
+        Your seat wasn't at the very front or back, though; the seats with IDs +1
+        and -1 from yours will be in your list.
+      */
         println(boardingPasses.sliding(2).find {
           case List(a, b) => a == b - 2
         }.map {
@@ -97,27 +99,22 @@ object Day05 {
     }
 
     def toBoardingPass(line: String): Int = {
-      def rowId(l: String): Int = {
-        def rowId(ll: String, lo: Int, hi: Int): Int = {
-          if (ll.isEmpty) if (l.last == 'F') lo else hi
-          else if (ll.head == 'F') rowId(ll.tail, lo, (lo + hi) / 2)
-          else rowId(ll.tail, ((lo + hi) / 2d).ceil.toInt, hi)
+      def id(l: String, min: Int, max: Int, loChar: Char) = l.foldLeft((min, max)) {
+        case ((lo, hi), c) => c match {
+          case `loChar` => (lo, (lo + hi) / 2)
+          case _ => (((lo + hi) / 2d).ceil.toInt, hi)
         }
-
-        rowId(l, 0, 127)
+      } match {
+        case (lo, hi) => l.last match {
+          case `loChar` => lo
+          case _ => hi
+        }
       }
 
-      def colId(l: String): Int = {
-        def colId(ll: String, lo: Int, hi: Int): Int = {
-          if (ll.isEmpty) if (l.last == 'L') lo else hi
-          else if (ll.head == 'L') colId(ll.tail, lo, (lo + hi) / 2)
-          else colId(ll.tail, ((lo + hi) / 2d).ceil.toInt, hi)
-        }
+      val rowId = id(line.take(7), 0, 127, 'F')
+      val colId = id(line.drop(7), 0, 7, 'L')
 
-        colId(l, 0, 7)
-      }
-
-      rowId(line.take(7)) * 8 + colId(line.drop(7))
+      rowId * 8 + colId
     }
   }
 
