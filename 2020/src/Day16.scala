@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
 
@@ -137,7 +138,7 @@ object Day16 {
     }
   }
 
-  def process(ll: List[String]) = {
+  def process(ll: List[String]): (Map[String, List[Range.Inclusive]], List[Int], List[List[Int]]) = {
     val fieldsExpression = """([^:]+): (\d+)-(\d+) or (\d+)-(\d+)""".r
     val fields = ll.takeWhile(_.matches(fieldsExpression.regex)).map {
       case fieldsExpression(field, sa, ea, sb, eb) => field -> List(sa.toInt to ea.toInt, sb.toInt to eb.toInt)
@@ -149,7 +150,8 @@ object Day16 {
     (fields, myTickets, nearbyTickets)
   }
 
-  def getTicketFields(validTickets: List[List[Int]], fields: Map[String, List[Range]]) = {
+  def getTicketFields(validTickets: List[List[Int]], fields: Map[String, List[Range]]): Seq[String] = {
+    @tailrec
     def correctPossibilities(ll: List[List[String]]): List[String] = {
       if (ll.forall(_.size == 1)) ll.flatten
       else {
@@ -161,6 +163,7 @@ object Day16 {
       }
     }
 
+    @tailrec
     def getPossibilities(idx: Int, target: Int, acc: List[List[String]]): List[List[String]] = {
       if (idx == target) acc
       else {
