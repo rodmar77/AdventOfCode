@@ -1,3 +1,4 @@
+import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
 
@@ -85,7 +86,7 @@ object Day08 {
         Run your copy of the boot code. Immediately before any instruction is
         executed a second time, what value is in the accumulator?
        */
-        println(terminates(ops) match {
+        println(execute(ops) match {
           case (_, acc) => acc
         })
 
@@ -147,8 +148,8 @@ object Day08 {
        */
         val x = ops.zipWithIndex.map {
           case ((op, value), idx) => op match {
-            case "nop" => terminates(ops.updated(idx, ("jmp", value)))
-            case "jmp" => terminates(ops.updated(idx, ("nop", value)))
+            case "nop" => execute(ops.updated(idx, ("jmp", value)))
+            case "jmp" => execute(ops.updated(idx, ("nop", value)))
             case _ => (false, -1)
           }
         }.find  {
@@ -161,20 +162,21 @@ object Day08 {
     }
   }
 
-  def terminates(ops: List[(String, Int)]) = {
-    def terminates(idx: Int, acc: Int, visited: Set[Int]): (Boolean, Int) = {
+  def execute(ops: List[(String, Int)]): (Boolean, Int) = {
+    @tailrec
+    def execute(idx: Int, acc: Int, visited: Set[Int]): (Boolean, Int) = {
       if (visited.contains(idx)) (false, acc)
       else if (idx < 0 || idx >= ops.size) (true, acc)
       else ops(idx) match {
         case (op, value) => op match {
-          case "nop" => terminates(idx + 1, acc, visited + idx)
-          case "acc" => terminates(idx + 1, acc + value, visited + idx)
-          case _ => terminates(idx + value, acc, visited + idx)
+          case "nop" => execute(idx + 1, acc, visited + idx)
+          case "acc" => execute(idx + 1, acc + value, visited + idx)
+          case _ => execute(idx + value, acc, visited + idx)
         }
       }
     }
 
-    terminates(0, 0, Set())
+    execute(0, 0, Set())
   }
 
 }
