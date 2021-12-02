@@ -51,7 +51,7 @@ object Day01 {
         Of course, your expense report is much larger. Find the two entries that
         sum to 2020; what do you get if you multiply them together?
       */
-        println(numbers.combinations(2).find(ll => ll.sum == 2020).map(_.product).getOrElse(-1))
+        println(numbers.combinations(2).find(ll => ll.sum == 2020).get.product)
 
       /*
         The Elves in accounting are thankful for your help; one of them even
@@ -66,7 +66,7 @@ object Day01 {
         In your expense report, what is the product of the three entries that sum
         to 2020?
        */
-        println(numbers.combinations(3).find(ll => ll.sum == 2020).map(_.product).getOrElse(-1))
+        println(numbers.combinations(3).find(ll => ll.sum == 2020).get.product)
 
     }
   }

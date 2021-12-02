@@ -148,8 +148,7 @@ object Day08 {
        */
         val x = ops.zipWithIndex.map {
           case ((op, value), idx) => op match {
-            case "nop" => execute(ops.updated(idx, ("jmp", value)))
-            case "jmp" => execute(ops.updated(idx, ("nop", value)))
+            case "nop" | "jmp" => execute(ops.updated(idx, ((if (op.equals("nop")) "jmp" else "nop"), value)))
             case _ => (false, -1)
           }
         }.find  {
