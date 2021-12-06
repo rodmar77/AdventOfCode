@@ -62,15 +62,14 @@ import scala.util.Using
     263 (increased)
 
   In this example, there are 7 measurements that are larger than the previous measurement.
-
-  How many measurements are larger than the previous measurement?
-
  */
 object Day01 {
 
   def main(args: Array[String]): Unit = {
     Using(Source.fromFile("inputs/2021/input_day01.txt")) {
       source => val numbers = source.getLines.map(_.toInt).toList
+
+        // How many measurements are larger than the previous measurement?
         println(increaseCount(numbers))
 
         /*
@@ -123,7 +122,7 @@ object Day01 {
     }
   }
 
-  def increaseCount(numbers: List[Int]) = numbers
+  def increaseCount(numbers: List[Int]): Int = numbers
     .sliding(2)
     .count {
       case Seq(a, b) => a < b
