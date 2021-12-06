@@ -78,7 +78,7 @@ object Day06 {
   def main(args: Array[String]): Unit = {
     Using(Source.fromFile("inputs/2021/input_day06.txt")) {
       source =>
-        val numbers = source.getLines().toList.head.split(",").map(_.toInt).toList
+        val numbers = source.bufferedReader().readLine().split(",").map(_.toInt)
 
         //  Find a way to simulate lanternfish. How many lanternfish would there be after 80 days?
         println(simulateDays(numbers, 80))
@@ -98,7 +98,7 @@ object Day06 {
     }
   }
 
-  def simulateDays(ll: List[Int], days: Int): Long = {
+  def simulateDays(ll: Array[Int], days: Int): Long = {
     val cache = mutable.Map[(Int, Int), Long]()
     def calcDays(n: Int, d: Int): Long = {
       if (d <= 0) 1L
@@ -106,6 +106,8 @@ object Day06 {
       else cache.getOrElseUpdate((n, d), calcDays(0, d-7) + calcDays(0, d-9))
     }
 
-    ll.map(calcDays(_, days)).sum
+    ll.groupBy(n => n).view.mapValues(_.length).map {
+      case (day, count) => count * calcDays(day, days)
+    }.sum
   }
 }
