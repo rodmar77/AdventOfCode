@@ -106,7 +106,8 @@ object Day03 {
             If 0 and 1 are equally common, keep values with a 0 in the position being
             considered.
 
-          For example, to determine the oxygen generator rating value using the same example diagnostic report from above:
+          For example, to determine the oxygen generator rating value using the same example
+          diagnostic report from above:
 
             Start with all 12 numbers and consider only the first bit of each number. There
             are more 1 bits (7) than 0 bits (5), so keep only the 7 numbers with a 1 in the
