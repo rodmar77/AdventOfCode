@@ -192,16 +192,8 @@ object Day08 {
 
     val segmentMapping: Map[String, Int] = {
       val validNumbers = Map[String, Int](
-        "012456" -> 0,
-        "25" -> 1,
-        "02346" -> 2,
-        "02356" -> 3,
-        "1235" -> 4,
-        "01356"-> 5,
-        "013456" -> 6,
-        "025" -> 7,
-        "0123456" -> 8,
-        "012356" -> 9)
+        "012456" -> 0, "25" -> 1, "02346" -> 2, "02356" -> 3, "1235" -> 4,
+                "01356"  -> 5, "013456" -> 6, "025" -> 7, "0123456" -> 8, "012356" -> 9)
 
       def generatesNumbers(ll: List[Char]): Boolean = {
         segments.map(_.map(ll.indexOf).sorted.mkString).forall(validNumbers.keySet.contains)
