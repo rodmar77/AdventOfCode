@@ -199,7 +199,7 @@ object Day08 {
         segments.map(_.map(ll.indexOf).sorted.mkString).forall(validNumbers.keySet.contains)
       }
 
-      List('a', 'b', 'c', 'd', 'e', 'f', 'g').permutations.find(generatesNumbers) match {
+      ('a' to 'g').toList.permutations.find(generatesNumbers) match {
         case Some(list) => validNumbers.map {
           case (k, v) => sort(k.map(n => list(n - '0'))) -> v
         }
