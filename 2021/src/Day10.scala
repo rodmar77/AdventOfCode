@@ -142,7 +142,6 @@ object Day10 {
   def main(args: Array[String]): Unit = {
     Using(Source.fromFile("inputs/2021/input_day10.txt")) {
       source =>
-
         // Find the first illegal character in each corrupted line of the navigation
         // subsystem. What is the total syntax error score for those errors?
 
