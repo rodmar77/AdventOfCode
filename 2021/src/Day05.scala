@@ -56,20 +56,16 @@ import scala.util.Using
  */
 object Day05 {
 
+  val line = """(\d+),(\d+) -> (\d+),(\d+)""".r
   def main(args: Array[String]): Unit = {
     Using(Source.fromFile("inputs/2021/input_day05.txt")) {
       source =>
         val coords = source
           .getLines()
-          .toList
-          .map(
-            _.split(" -> ")
-              .map(
-                _.split(",")
-                  .map(_.toInt)))
           .map {
-            case Array(Array(x0, y0), Array(x1, y1)) => ((x0, y0), (x1, y1))
+            case line(x0, y0, x1, y1) => ((x0.toInt, y0.toInt), (x1.toInt, y1.toInt))
           }
+          .toList
 
         //  Consider only horizontal and vertical lines. At how many points do at least
         //  two lines overlap?

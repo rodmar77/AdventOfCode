@@ -1,5 +1,6 @@
 import scala.annotation.tailrec
 import scala.io.Source
+import scala.language.implicitConversions
 import scala.util.Using
 
 /*
@@ -73,10 +74,34 @@ import scala.util.Using
   unmarked numbers on that board; in this case, the sum is 188. Then, multiply that sum
   by the number that was just called when the board won, 24, to get the final score,
   188 * 24 = 4512.
+
+  --- Part Two ---
+
+  On the other hand, it might be wise to try a different strategy: let the giant squid win.
+
+  You aren't sure how many bingo boards a giant squid could play at once, so rather than
+  waste time counting its arms, the safe thing to do is to figure out which board will win
+  last and choose that one. That way, no matter which boards it picks, it will win for sure.
+
+  In the above example, the second board is the last to win, which happens after 13 is
+  eventually called and its middle column is completely marked.
+
+  If you were to keep playing until this point, the second board would have a sum of
+  unmarked numbers equal to 148 for a final score of 148 * 13 = 1924.
+
  */
 object Day04 {
 
-  type Board = List[List[Int]]
+  case class Board(b: List[List[Int]], lastNumber: Int) {
+    def getScore: Int = b.flatten.filterNot(_ == -1).sum * lastNumber
+    def isWinningBoard: Boolean = b.exists(_.forall(_ == -1)) || b.transpose.exists(_.forall(_ == -1))
+    def drawNumber(number: Int): Board = Board(b.map(_.map {
+      case `number` => -1
+      case n => n
+    }), number)
+  }
+
+  implicit def listToBoard(b: List[List[Int]]): Board = Board(b, 0)
 
   def main(args: Array[String]): Unit = {
     Using(Source.fromFile("inputs/2021/input_day04.txt")) {
@@ -86,64 +111,31 @@ object Day04 {
         val boards = extractBoards(lines.tail)
 
         getWinningBoard(boards, numbers) match {
-          case (first :: _) :+ last =>
+          case first +: _ :+ last =>
 
-            //  To guarantee victory against the giant squid, figure out which board will
-            //  win first. What will your final score be if you choose that board?
-            println(getBoardScore(first))
+            // To guarantee victory against the giant squid, figure out which board will
+            // win first. What will your final score be if you choose that board?
+            println(first.getScore)
 
-            /*
-              --- Part Two ---
-
-              On the other hand, it might be wise to try a different strategy: let the
-              giant squid win.
-
-              You aren't sure how many bingo boards a giant squid could play at once, so
-              rather than waste time counting its arms, the safe thing to do is to figure
-              out which board will win last and choose that one. That way, no matter
-              which boards it picks, it will win for sure.
-
-              In the above example, the second board is the last to win, which happens
-              after 13 is eventually called and its middle column is completely marked.
-              If you were to keep playing until this point, the second board would have
-              a sum of unmarked numbers equal to 148 for a final score of 148 * 13 = 1924.
-
-              Figure out which board will win last. Once it wins, what would its final
-              score be?
-             */
-            println(getBoardScore(last))
+            // Figure out which board will win last. Once it wins, what would its final
+            // score be?
+            println(last.getScore)
         }
     }
   }
 
-  def getBoardScore(t: (Board, Int)): Int = t match {
-    case (board, number) => board.flatten.filterNot(_ == -1).sum * number
-  }
+  def getWinningBoard(boards: List[Board], numbers: List[Int]): List[Board] = {
+    def drawNumber(currentBoards: List[Board], number: Int) = currentBoards.map(_.drawNumber(number))
 
-  def getWinningBoard(boards: List[Board], numbers: List[Int]): List[(Board, Int)] = {
-    def _applyToBoards(currentBoards: List[Board], number: Int) = {
-      currentBoards.map(_.map(_.map(n => if (n == number) -1 else n)))
+    numbers.foldLeft((boards, List[Board]())) {
+      case ((currentBoards, winningBoards), number) =>
+        if (currentBoards.isEmpty) (currentBoards, winningBoards)
+        else currentBoards.filter(_.isWinningBoard) match {
+          case boards: List[Board] => (drawNumber(currentBoards diff boards, number), winningBoards ++ boards)
+        }
+    } match {
+      case (_, winningBoards) => winningBoards
     }
-
-    def _isWinningBoard(board: Board) = board.exists(_.forall(_ == -1)) || board.transpose.exists(_.forall(_ == -1))
-
-    def _getWinningBoardsIfExisting(currentBoards: List[Board]) = currentBoards.filter(_isWinningBoard)
-
-    @tailrec
-    def _getWinningBoards(
-                 currentBoards: List[Board],
-                 lastNumber: Int,
-                 currentNumbers: List[Int],
-                 acc: List[(Board, Int)]): List[(Board, Int)] = currentNumbers match {
-
-      case Nil => acc
-      case x :: xs => if (currentBoards.isEmpty) acc else _getWinningBoardsIfExisting(currentBoards) match {
-        case Nil => _getWinningBoards(_applyToBoards(currentBoards, x), x, xs, acc)
-        case boards: List[Board] => _getWinningBoards(_applyToBoards(currentBoards diff boards, x), x, xs, acc ++ boards.map((_, lastNumber)))
-      }
-    }
-
-    _getWinningBoards(boards, -1, numbers, Nil)
   }
 
   def extractBoards(it: List[String]): List[Board] = {
