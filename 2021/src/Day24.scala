@@ -1,4 +1,5 @@
 import scala.annotation.tailrec
+import scala.collection.immutable.ListMap
 import scala.io.Source
 import scala.util.Using
 
@@ -7,32 +8,99 @@ object Day24 {
   def main(args: Array[String]): Unit = {
     Using(Source.fromFile("inputs/2021/input_day24.txt")) {
       source =>
-        val lines = source.getLines().toList
-        println(performMoves(lines))
+        val program = source.getLines().toList
+        println(run(program, 1))
+        println(run(program, 2))
     }
   }
 
-  def performMoves(ocean: List[String]): Int = {
-    @tailrec
-    def performMoves(currentOcean: List[String], moveCount: Int): Int = {
-      val nextOcean = currentOcean
-        .map(line => {
-          if (line.last == '>' && line.head == '.') '>' +: line.init.tail.replace(">.", ".>") :+ '.'
-          else line.replace(">.", ".>")
-        })
-        .transpose
-        .map(_.mkString)
-        .map(line => {
-          if (line.last == 'v' && line.head == '.') 'v' +: line.init.tail.replace("v.", ".v") :+ '.'
-          else line.replace("v.", ".v")
-        })
-        .transpose
-        .map(_.mkString)
+  def run(program: List[String], direction: Int) = {
+    val instruction = "([a-z]+) ([a-z]+) (.+)".r
+    val range = if (direction == 1) (1 to 9).reverse else (1 to 9)
 
-      if (currentOcean.indices.forall(i => currentOcean(i).equals(nextOcean(i)))) moveCount
-      else performMoves(nextOcean, moveCount + 1)
+    def run(block: List[String], input: Int, z: Int = 0): Map[String, Any] = {
+      val functions = Map[String, (Int, Int) => Int](
+        "add" -> (_ + _),
+        "mul" -> (_ * _),
+        "div" -> (_ / _),
+        "mod" -> (_ % _),
+        "eql" -> ((a, b) => if (a == b) 1 else 0)
+      )
+
+      @tailrec
+      def run(block: List[String], variables: Map[String, Any]): Map[String, Any] = {
+        def value(v: String) = if (v.forall(_.isLetter)) variables(v) else v.toInt
+        def eval(op: String, a: String, b: String) = (variables(a), value(b)) match {
+          case (x: Int, y: Int) => functions(op)(x, y)
+          case (x: Any, y: Any) => op match {
+            case "add" => if (x == 0) y else if (y == 0) x else None
+            case "mul" => if (x == 0 || y == 0) 0 else if (x == 1) y else if (y == 1) x else None
+            case "div" => if (x == 0) 0 else if (y == 1) x else None
+            case "mod" => if (x == 0 || y == 1) 0 else None
+            case "eql" => (a, y) match {
+              case ("w", b: Int) if b < 1 || b > 9 => 0
+              case _ => None
+            }
+          }
+        }
+
+        block match {
+          case Nil => variables
+          case x :: xs => x match {
+            case instruction(op, a, b) => run(xs, variables + (a -> eval(op, a, b)))
+          }
+        }
+      }
+
+      run(block, Map("w" -> input, "x" -> 0, "y" -> 0, "z" -> z))
     }
 
-    performMoves(ocean, 1)
+    def zTarget(block: List[String]) = {
+      def value(v: String) = if (v.forall(_.isLetter)) 1000 else v.toInt
+
+      block.find {
+        case instruction(a, b, c) => "add".equals(a) && "x".equals(b) && value(c) < 0
+      }.map {
+        case instruction("add", "x", c) => -value(c)
+      }
+    }
+
+    val blocks =
+      (1 to 14)
+        .foldLeft((program.tail, List[List[String]]())) {
+          case ((p, blocks), _) =>
+            if (p.length == 17) (Nil, blocks :+ p)
+            else p.splitAt(17) match {
+              case (left, right) => (right.tail, blocks :+ left)
+            }
+        } match {
+            case (_, ll) => ll
+        }
+
+    val results = range.foldLeft(ListMap[Int, List[Int]]()) {
+      case (map, w) => run(blocks.head, w)("z") match {
+        case z: Int => map + (z -> (map.getOrElse(z, Nil) :+ w))
+      }
+    }
+
+    def evaluateBlock(previous: ListMap[Int, List[Int]], block: List[String]) = {
+      val zt = zTarget(block)
+      def evaluateBlockWithInput(current: ListMap[Int, List[Int]], input: Int) = {
+        def evaluateBlockWithTarget(current: ListMap[Int, List[Int]], z: Int) = {
+          if (zt.exists(x => (z % 26 - x) != input)) current
+          else run(block, input, z)("z") match {
+            case z1: Int =>
+              if (current.contains(z1)) current
+              else current + (z1 -> (previous(z) :+ input))
+          }
+        }
+
+        previous.keys.foldLeft(current)(evaluateBlockWithTarget)
+      }
+
+      range.foldLeft(ListMap[Int, List[Int]]())(evaluateBlockWithInput)
+    }
+
+    blocks.tail.foldLeft(results)(evaluateBlock)(0).mkString
   }
 }
