@@ -113,7 +113,7 @@ object Day14 {
       }
     }
 
-  def applyRules(template: String, rules: Map[String, String], days: Int) = {
+  def applyRules(template: String, rules: Map[String, String], days: Int): Map[Char, Long] = {
     def applyRule(v: (String, Long)) = v match {
       case (k, v) => rules.get(k) match {
         case Some(rule) => List((k.head + rule) -> v, (rule + k.last) -> v)

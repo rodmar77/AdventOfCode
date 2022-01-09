@@ -1,4 +1,5 @@
 import scala.io.Source
+import scala.util.Using
 
 /*
   --- Day 2: I Was Told There Would Be No Math ---
@@ -20,18 +21,7 @@ import scala.io.Source
   A present with dimensions 1x1x10 requires 2*1 + 2*10 + 2*10 = 42 square feet
   of wrapping paper plus 1 square foot of slack, for a total of 43 square feet.
 
- */
-object Day02 extends App {
-  
-  val lines = Source.fromFile("inputs/2015/input_day02.txt").getLines.map(_.split("x").map(_.toInt).sorted).toList
-
-  // All numbers in the elves' list are in feet. How many total square feet of
-  // wrapping paper should they order?
-  println(lines.map {
-    case Array(l, w, h) => 3*l*w + 2*w*h + 2*l*h
-  }.sum)
-
-  /*
+  --- Part Two ---
 
   The elves are also running low on ribbon. Ribbon is all the same width, so they
   only have to worry about the length they need to order, which they would again
@@ -51,11 +41,24 @@ object Day02 extends App {
   A present with dimensions 1x1x10 requires 1+1+1+1 = 4 feet of ribbon to wrap the
   present plus 1*1*10 = 10 feet of ribbon for the bow, for a total of 14 feet.
 
-  How many total feet of ribbon should they order?
+ */
+object Day02  {
 
-   */
-  println(lines.map{
-    case Array(l, w, h) => 2*(l + w) + (l * w * h)
-  }.sum)
-  
+  def main(args: Array[String]): Unit = {
+    Using(Source.fromFile("inputs/2015/input_day02.txt")) {
+      source =>
+        val lines = source.getLines.map(_.split("x").map(_.toInt).sorted).toList
+
+        // All numbers in the elves' list are in feet. How many total square feet of
+        // wrapping paper should they order?
+        println(lines.map {
+          case Array(l, w, h) => 3 * l * w + 2 * w * h + 2 * l * h
+        }.sum)
+
+        // How many total feet of ribbon should they order?
+        println(lines.map {
+          case Array(l, w, h) => 2 * (l + w) + (l * w * h)
+        }.sum)
+    }
+  }
 }

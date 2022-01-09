@@ -1,9 +1,8 @@
 import java.lang.Math.max
-
 import scala.io.Source
+import scala.util.Using
 
 /*
-
   --- Day 6: Probably a Fire Hazard ---
 
   Because your neighbors keep defeating you in the holiday house decorating
@@ -25,85 +24,90 @@ import scala.io.Source
 
   For example:
 
-  turn on 0,0 through 999,999 would turn on (or leave on) every light.
+    turn on 0,0 through 999,999 would turn on (or leave on) every light.
 
-  toggle 0,0 through 999,0 would toggle the first line of 1000 lights, turning off
-  the ones that were on, and turning on the ones that were off.
+    toggle 0,0 through 999,0 would toggle the first line of 1000 lights, turning off
+    the ones that were on, and turning on the ones that were off.
 
-  turn off 499,499 through 500,500 would turn off (or leave off) the middle four lights.
+    turn off 499,499 through 500,500 would turn off (or leave off) the middle four lights.
 
- */
-object Day06 extends App {
-
-  val regex = """(.+?) (\d+),(\d+) through (\d+),(\d+)""".r
-
-  val data = Source
-    .fromFile("inputs/2015/input_day06.txt")
-    .getLines
-    .toList
-    .map(regex.findFirstMatchIn(_).get)
-    .map(m =>
-      (m.group(1),
-        (m.group(2).toInt, m.group(3).toInt),
-        (m.group(4).toInt, m.group(5).toInt)))
-
-  // After following the instructions, how many lights are lit?
-  println(lightsOn(data))
-
-  def lightsOn(ls: List[(String, (Int, Int), (Int, Int))]) = {
-    val array = Array.fill(1000, 1000)(false)
-    ls.foreach {
-      case (command, (x0, y0), (x1, y1)) =>
-        command match {
-          case "turn on" => (x0 to x1).foreach(x => (y0 to y1).foreach(y => array(y)(x) = true))
-          case "turn off" => (x0 to x1).foreach(x => (y0 to y1).foreach(y => array(y)(x) = false))
-          case "toggle" => (x0 to x1).foreach(x => (y0 to y1).foreach(y => array(y)(x) = !array(y)(x)))
-        }
-    }
-
-    array.map(_.count(v => v)).sum
-  }
-
-  /*
   --- Part Two ---
+
   You just finish implementing your winning light pattern when you realize you
   mistranslated Santa's message from Ancient Nordic Elvish.
 
   The light grid you bought actually has individual brightness controls; each
   light can have a brightness of zero or more. The lights all start at zero.
 
-  * The phrase turn on actually means that you should increase the brightness
-    of those lights by 1.
+    * The phrase turn on actually means that you should increase the brightness
+      of those lights by 1.
 
-  * The phrase turn off actually means that you should decrease the brightness
-    of those lights by 1, to a minimum of zero.
+    * The phrase turn off actually means that you should decrease the brightness
+      of those lights by 1, to a minimum of zero.
 
-  * The phrase toggle actually means that you should increase the brightness of
-    those lights by 2.
-
-  What is the total brightness of all lights combined after following Santa's
-  instructions?
+    * The phrase toggle actually means that you should increase the brightness of
+      those lights by 2.
 
   For example:
 
-  turn on 0,0 through 0,0 would increase the total brightness by 1.
-  toggle 0,0 through 999,999 would increase the total brightness by 2000000.
+    turn on 0,0 through 0,0 would increase the total brightness by 1.
+    toggle 0,0 through 999,999 would increase the total brightness by 2000000.
+ */
+object Day06 {
 
-   */
-  println(lightsToggle(data))
+  def main(args: Array[String]): Unit = {
+    Using(Source.fromFile("inputs/2015/input_day06.txt")) {
+      source =>
+        val regex = """(.+?) (\d+),(\d+) through (\d+),(\d+)""".r
 
-  def lightsToggle(ls: List[(String, (Int, Int), (Int, Int))]) = {
-    val array = Array.fill(1000, 1000)(0)
-    ls.foreach {
-      case (command, (x0, y0), (x1, y1)) =>
-        command match {
-          case "turn on" => (x0 to x1).foreach(x => (y0 to y1).foreach(y => array(y)(x) += 1))
-          case "turn off" => (x0 to x1).foreach(x => (y0 to y1).foreach(y => array(y)(x) = max(array(y)(x) - 1, 0)))
-          case "toggle" => (x0 to x1).foreach(x => (y0 to y1).foreach(y => array(y)(x) += 2))
-        }
+        val data = source
+          .getLines
+          .toList
+          .map {
+            case regex(a, x0, y0, x1, y1) => (a, (x0.toInt, y0.toInt), (x1.toInt, y1.toInt))
+          }
+
+        // After following the instructions, how many lights are lit?
+        println(applyLights(0, data))
+
+        //  What is the total brightness of all lights combined after following Santa's
+        //  instructions?
+        println(applyLights(1, data))
+    }
+  }
+
+
+  def applyLights(lightType: Int, ls: List[(String, (Int, Int), (Int, Int))]): Int = {
+    def apply(array: Seq[Seq[Int]], start: (Int, Int), end: (Int, Int), f: (Int, Int) => Int) = (start, end) match {
+      case ((x0, y0), (x1, y1)) =>
+        array.indices.collect(y => array(y).indices.collect(x => if (x0 <= x && x <= x1 && y0 <= y && y <= y1) f(x, y) else array(y)(x)))
     }
 
-    array.map(_.sum).sum
+    def oldLights() = {
+      val array = (0 until 1000).map(_ => (0 until 1000).map(_ => 0))
+      ls.foldLeft(array) {
+        case (array, (command, start, end)) =>
+          command match {
+            case "turn on" => apply(array, start, end, (_, _) => 1)
+            case "turn off" => apply(array, start, end, (_, _) => 0)
+            case "toggle" => apply(array, start, end, (x, y) => (array(y)(x) + 1) % 2)
+          }
+      }.flatten.sum
+    }
+
+    def newLights() = {
+      val array = (0 until 1000).map(_ => (0 until 1000).map(_ => 0))
+      ls.foldLeft(array) {
+        case (array, (command, start, end)) =>
+          command match {
+            case "turn on" => apply(array, start, end, (x, y) => array(y)(x) + 1)
+            case "turn off" => apply(array, start, end, (x, y) => (array(y)(x) - 1).max(0))
+            case "toggle" => apply(array, start, end, (x, y) => array(y)(x) + 2)
+          }
+      }.flatten.sum
+    }
+
+    if (lightType == 0) oldLights() else newLights()
   }
 
 }

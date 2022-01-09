@@ -1,4 +1,5 @@
 import scala.io.Source
+import scala.util.Using
 
 /*
 
@@ -30,23 +31,7 @@ import scala.io.Source
   haegwjzuvuyypxyu is naughty because it contains the string xy.
   dvszwmarrgswjxmb is naughty because it contains only one vowel.
 
- */
-object Day05 extends App {
-
-  val lines = Source.fromFile("inputs/2015/input_day05.txt").getLines.toList
-
-  // How many strings are nice?
-  println(lines.count(isNice))
-
-  def isNice(s: String) = {
-    val threeVowels = s.matches("(.*[aeiou].*){3,}")
-    val doubleLetter = s.matches(".*(.)\\1.*")
-    val notForbidden = List("ab", "cd", "pq", "xy").forall(!s.contains(_))
-
-    threeVowels && doubleLetter && notForbidden
-  }
-
-  /*
+  --- Part Two ---
 
   Realizing the error of his ways, Santa has switched to a better model of
   determining whether a string is naughty or nice. None of the old rules apply,
@@ -75,12 +60,31 @@ object Day05 extends App {
   ieodomkazucvgmuy is naughty because it has a repeating letter with one between
   (odo), but no pair that appears twice.
 
-  How many strings are nice under these new rules?
+ */
+object Day05 {
 
-   */
-  println(lines.count(isNicer))
+  def main(args: Array[String]): Unit = {
+    Using(Source.fromFile("inputs/2015/input_day05.txt")) {
+      source =>
+        val lines = source.getLines.toList
 
-  def isNicer(s: String) = {
+        // How many strings are nice?
+        println(lines.count(isNice))
+
+        // How many strings are nice under these new rules?
+        println(lines.count(isNicer))
+    }
+  }
+
+  def isNice(s: String): Boolean = {
+    val threeVowels = s.matches("(.*[aeiou].*){3,}")
+    val doubleLetter = s.matches(".*(.)\\1.*")
+    val notForbidden = List("ab", "cd", "pq", "xy").forall(!s.contains(_))
+
+    threeVowels && doubleLetter && notForbidden
+  }
+
+  def isNicer(s: String): Boolean = {
     val twoDoubleLetter = s.matches(".*(..).*\\1.*")
     val repeatWithBetween = s.matches(".*(.).\\1.*")
 

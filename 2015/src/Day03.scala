@@ -1,4 +1,5 @@
 import scala.io.Source
+import scala.util.Using
 
 /*
 
@@ -16,28 +17,11 @@ import scala.io.Source
   so his directions are a little off, and Santa ends up visiting some houses more
   than once.
 
- */
-object Day03 extends App {
+    > delivers presents to 2 houses: one at the starting location, and one to the east.
+    ^>v< delivers presents to 4 houses in a square, including twice to the house at his
+    starting/ending location.
+    ^v^v^v^v^v delivers a bunch of presents to some very lucky children at only 2 houses.
 
-  val text = Source.fromFile("inputs/2015/input_day03.txt").getLines.mkString
-
-  /*
-
-  How many houses receive at least one present?
-
-  For example:
-
-  > delivers presents to 2 houses: one at the starting location, and one to the east.
-
-  ^>v< delivers presents to 4 houses in a square, including twice to the house at his
-  starting/ending location.
-
-  ^v^v^v^v^v delivers a bunch of presents to some very lucky children at only 2 houses.
-
-   */
-  println(visited(text).size)
-
-  /*
   --- Part Two ---
 
   The next year, to speed up the process, Santa creates a robot version of himself,
@@ -47,32 +31,42 @@ object Day03 extends App {
   same starting house), then take turns moving based on instructions from the elf,
   who is eggnoggedly reading from the same script as the previous year.
 
-  This year, how many houses receive at least one present?
-
   For example:
 
-  ^v delivers presents to 3 houses, because Santa goes north, and then Robo-Santa
-  goes south.
+    ^v delivers presents to 3 houses, because Santa goes north, and then Robo-Santa
+    goes south.
+    ^>v< now delivers presents to 3 houses, and Santa and Robo-Santa end up back where
+    they started.
+    ^v^v^v^v^v now delivers presents to 11 houses, with Santa going one direction and
+    Robo-Santa going the other.
 
-  ^>v< now delivers presents to 3 houses, and Santa and Robo-Santa end up back where
-  they started.
+ */
+object Day03 {
 
-  ^v^v^v^v^v now delivers presents to 11 houses, with Santa going one direction and
-  Robo-Santa going the other.
-   */
-  val (even, odd) = text.indices.partition(_ % 2 == 0)
-  println(
-    (visited(even) ++ visited(odd))
-      .distinct
-      .size)
+  def main(args: Array[String]): Unit = {
+    Using(Source.fromFile("inputs/2015/input_day03.txt")) {
+      source =>
+        val text = source.getLines.mkString
 
-  def visited(s: Seq[Int]): Seq[(Int, Int)] = visited(s.map(text(_)).mkString)
+        //  How many houses receive at least one present?
+        println(visited(text).size)
+
+        //  This year, how many houses receive at least one present?
+        val (even, odd) = text.indices.partition(_ % 2 == 0)
+        println(
+          (visited(text, even) ++ visited(text, odd))
+            .distinct
+            .size)
+    }
+  }
+
+  def visited(text: String, s: Seq[Int]): Seq[(Int, Int)] = visited(s.map(text(_)).mkString)
   def visited(s: String) = s
-    .scanLeft((0, 0))((a, b) => b match {
-      case '^' => (a._1, a._2 + 1)
-      case 'v' => (a._1, a._2 - 1)
-      case '<' => (a._1 - 1, a._2)
-      case _ => (a._1 + 1, a._2)
+    .scanLeft((0, 0))((a, b) => (a, b) match {
+      case ((x, y), '^') => (x, y + 1)
+      case ((x, y), 'v') => (x, y - 1)
+      case ((x, y), '<') => (x - 1, y)
+      case ((x, y), '>') => (x + 1, y)
     })
     .distinct
 }

@@ -2,6 +2,7 @@ import scala.annotation.tailrec
 import scala.collection.immutable.ListMap
 import scala.io.Source
 import scala.util.Using
+import scala.Nothing
 
 object Day24 {
 
@@ -14,9 +15,9 @@ object Day24 {
     }
   }
 
-  def run(program: List[String], direction: Int) = {
+  def run(program: List[String], direction: Int): String = {
     val instruction = "([a-z]+) ([a-z]+) (.+)".r
-    val range = if (direction == 1) (1 to 9).reverse else (1 to 9)
+    val range = if (direction == 1) (1 to 9).reverse else 1 to 9
 
     def run(block: List[String], input: Int, z: Int = 0): Map[String, Any] = {
       val functions = Map[String, (Int, Int) => Int](
@@ -57,7 +58,6 @@ object Day24 {
 
     def zTarget(block: List[String]) = {
       def value(v: String) = if (v.forall(_.isLetter)) 1000 else v.toInt
-
       block.find {
         case instruction(a, b, c) => "add".equals(a) && "x".equals(b) && value(c) < 0
       }.map {
@@ -65,18 +65,15 @@ object Day24 {
       }
     }
 
-    val blocks =
-      (1 to 14)
-        .foldLeft((program.tail, List[List[String]]())) {
-          case ((p, blocks), _) =>
-            if (p.length == 17) (Nil, blocks :+ p)
-            else p.splitAt(17) match {
-              case (left, right) => (right.tail, blocks :+ left)
-            }
-        } match {
-            case (_, ll) => ll
-        }
+    @tailrec
+    def extractBlocks(p: List[String], blocks: List[List[String]]): List[List[String]] = p.indexWhere(_.equals("inp w")) match {
+      case i: Int if i < 0 => blocks :+ p
+      case i: Int if i > 0 => p.splitAt(i) match {
+        case (left, right) => extractBlocks(right.tail, blocks :+ left)
+      }
+    }
 
+    val blocks = extractBlocks(program.tail, Nil)
     val results = range.foldLeft(ListMap[Int, List[Int]]()) {
       case (map, w) => run(blocks.head, w)("z") match {
         case z: Int => map + (z -> (map.getOrElse(z, Nil) :+ w))

@@ -1,6 +1,7 @@
 import java.security._
-
+import scala.annotation.tailrec
 import scala.io.Source
+import scala.util.Using
 
 /*
 
@@ -26,20 +27,26 @@ import scala.io.Source
   pqrstuv1048970 looks like 000006136ef....
 
  */
-object Day04 extends App {
+object Day04 {
 
-  val prefix = Source
-    .fromFile("inputs/2015/input_day04.txt")
-    .getLines
-    .mkString
+  def main(args: Array[String]): Unit = {
+    Using(Source.fromFile("inputs/2015/input_day04.txt")) {
+      source =>
+        val prefix = source.getLines.mkString
 
-  println(minWithPrefixes(prefix, 5))
+        println(minWithPrefixes(prefix, 5))
 
-  // Now find one that starts with six zeroes.
-  println(minWithPrefixes(prefix, 6))
+        // Now find one that starts with six zeroes.
+        println(minWithPrefixes(prefix, 6))
+    }
+  }
   
-  def minWithPrefixes(sp: String, count: Int) = {
-    def matches(bytes: Array[Byte]) = {
+  def minWithPrefixes(sp: String, count: Int): Int = {
+    val md5Digest = MessageDigest.getInstance("MD5")
+    def md5Hash(text: String) = md5Digest.digest(text.getBytes("ASCII"))
+
+    def matches(bytes: Array[Byte]): Boolean = {
+      @tailrec
       def matches(bytes: Array[Byte], acc: Int): Boolean = {
         if (acc == 0) true
         else if (bytes.head == 0) matches(bytes.tail, acc - 2)
@@ -50,14 +57,11 @@ object Day04 extends App {
       matches(bytes, count)
     }
 
+    @tailrec
     def minWithPrefix(acc: Int): Int = {
       if (matches(md5Hash(sp + acc))) acc
       else minWithPrefix(acc + 1)
     }
-
-    def md5Hash(text: String) = MessageDigest
-      .getInstance("MD5")
-      .digest(text.getBytes("ASCII"))
 
     minWithPrefix(0)
   }
