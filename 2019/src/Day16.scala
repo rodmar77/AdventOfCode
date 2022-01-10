@@ -8,9 +8,7 @@ object Day16 {
     Using(Source.fromFile("inputs/2019/input_day16.txt")) {
       source =>
         val digits = source.mkString
-
         println(applyPhases(digits, 100).take(8))
-
     }
   }
 

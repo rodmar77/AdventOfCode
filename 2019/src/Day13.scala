@@ -68,7 +68,7 @@ object Day13 {
 
         // Beat the game by breaking all the blocks. What is your score after the last
         // block is broken?
-        try { println(playGame(numbers)) } catch { case e: Exception => e.printStackTrace()}
+        println(playGame(numbers))
     }
   }
 

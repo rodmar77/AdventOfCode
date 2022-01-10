@@ -109,6 +109,8 @@ import scala.util.Using
  */
 object Day11 {
 
+  type PanelMap = Map[(Int, Int), Int]
+
   def main(args: Array[String]): Unit = {
     Using(Source.fromFile("inputs/2019/input_day11.txt")) {
       source =>
@@ -131,7 +133,7 @@ object Day11 {
   }
 
   @tailrec
-  def execute(machine: IntCodeMachine, buffer: ListBuffer[BigInt], currentDirection: Int, position: (Int, Int), panels: Map[(Int, Int), Int]): Map[(Int, Int), Int] = {
+  def execute(machine: IntCodeMachine, buffer: ListBuffer[BigInt], currentDirection: Int, position: (Int, Int), panels: PanelMap): PanelMap = {
     if (machine.isRunning) {
       machine.resume(panels(position))
       buffer match {
